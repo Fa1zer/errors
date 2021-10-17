@@ -17,11 +17,28 @@ class LogInViewController: UIViewController, Coordinatable {
     
     private let bruteForce = BruteForce()
     private let color = UIColor(patternImage: UIImage(named: "blue_pixel")!)
-    
+
+//MARK: Задание 1
     private lazy var logInButton: CustomButton = {
        let button = CustomButton(title: "Log In",
                                  color: color,
-                                 target: { [weak self] in self?.tapButton() })
+                                 target: { [weak self] in
+           do {
+               try self?.tapButton()
+           } catch {
+               
+               let alertController = UIAlertController(title: "Неправильно введен логин или пароль",
+                                           message: "Попробуйте ввести заново",
+                                           preferredStyle: .alert)
+
+               let cancelAction = UIAlertAction(title: "ОК", style: .default)
+
+
+               alertController.addAction(cancelAction)
+
+               self?.present(alertController, animated: true, completion: nil)
+           }
+       })
         
         button.tintColor = .white
         button.layer.cornerRadius = 10
@@ -260,8 +277,9 @@ class LogInViewController: UIViewController, Coordinatable {
         scrollView.contentInset.bottom = .zero
         scrollView.verticalScrollIndicatorInsets = .zero
     }
-    
-    private func tapButton() {
+
+// MARK: Задание 1
+    private func tapButton() throws {
         
         if delegate?.inspect(emailOrPhone: usersEmailOrPhone.text!,
                              password: usersPassword.text!) == true {
@@ -269,17 +287,7 @@ class LogInViewController: UIViewController, Coordinatable {
             
             navigationController?.pushViewController(ProfileViewController(), animated: true)
         } else {
-            
-            let alertController = UIAlertController(title: "Неправильно введен логин или пароль",
-                                        message: "Попробуйте ввести заново",
-                                        preferredStyle: .alert)
-            
-            let cancelAction = UIAlertAction(title: "ОК", style: .default)
-            
-            
-            alertController.addAction(cancelAction)
-            
-            self.present(alertController, animated: true, completion: nil)
+            throw AppErrors.incorrectPassword
         }
     }
 }

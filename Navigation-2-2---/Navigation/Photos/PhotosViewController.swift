@@ -48,24 +48,41 @@ class PhotosViewController: UIViewController, Coordinatable {
         let fifthImages = [UIImage(named: "mac pro")!, UIImage(named: "mac mini")!]
 
         imageViews.forEach({firstImages.append($0.image!)})
-        
+       
+//MARK: Задание 2
         imageProcessor.processImagesOnThread(sourceImages: firstImages, filter: .colorInvert,
-                                             qos: .background) { images in
-            for i in 0 ..< images.count {
-                DispatchQueue.main.async {
-                    self.imageViews[i].image = UIImage(cgImage: images[i]!)
+                                             qos: .background) { [weak self] images in
+            
+            self?.notFoundImage(imageFound: Bool.random()) { result in
+                switch result {
+                case .success(true):
+                    for i in 0 ..< images.count {
+                        DispatchQueue.main.async {
+                            self?.imageViews[i].image = UIImage(cgImage: images[i]!)
+                        }
+                    }
+                    
+                default:
+                    let alertController = UIAlertController(title: "Not Found",
+                                                message: nil,
+                                                preferredStyle: .alert)
+
+                    let cancelAction = UIAlertAction(title: "ОК", style: .default)
+
+
+                    alertController.addAction(cancelAction)
+                    
+                    DispatchQueue.main.async {
+                        self?.present(alertController, animated: true, completion: nil)
+                    }
                 }
             }
-            
         } // 616
         
         imageProcessor.processImagesOnThread(sourceImages: secondImages, filter: .noir,
                                              qos: .default) { images in
-            for i in 0 ..< images.count {
-                DispatchQueue.main.async {
-                    self.imageViews.append(UIImageView(image: UIImage(cgImage: images[i]!)))
-                }
-            }
+            
+            
         } // 62
         
         imageProcessor.processImagesOnThread(sourceImages: thirdImages, filter: .chrome,
@@ -126,6 +143,15 @@ class PhotosViewController: UIViewController, Coordinatable {
         super.viewDidDisappear(animated)
         
         imagePublisherFacade.removeSubscription(for: self)
+    }
+    
+//MARK: Задание 2
+    private func notFoundImage(imageFound: Bool, completion: @escaping ((Result<Bool, AppErrors>) -> Void)) {
+        if imageFound {
+            completion(.success(imageFound))
+        } else {
+            completion(.failure(.imageNotFound))
+        }
     }
 }
 
