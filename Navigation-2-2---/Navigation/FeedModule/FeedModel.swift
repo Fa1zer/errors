@@ -12,7 +12,7 @@ import UIKit
 class FeedModel {    
     private let password = "Password"
         
-    func check(word: String, configuration: inout FeedConfiguration?){
+    func check(word: String, configuration: inout FeedConfiguration?) {
         if word == password {
             configuration = .green
         } else {

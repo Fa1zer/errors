@@ -17,11 +17,28 @@ class LogInViewController: UIViewController, Coordinatable {
     
     private let bruteForce = BruteForce()
     private let color = UIColor(patternImage: UIImage(named: "blue_pixel")!)
-    
+
+//MARK: Задание 1
     private lazy var logInButton: CustomButton = {
        let button = CustomButton(title: "Log In",
                                  color: color,
-                                 target: { [weak self] in self?.tapButton() })
+                                 target: { [weak self] in
+           do {
+               try self?.tapButton()
+           } catch {
+               
+               let alertController = UIAlertController(title: "Неправильно введен логин или пароль",
+                                           message: "Попробуйте ввести заново",
+                                           preferredStyle: .alert)
+
+               let cancelAction = UIAlertAction(title: "ОК", style: .default)
+
+
+               alertController.addAction(cancelAction)
+
+               self?.present(alertController, animated: true, completion: nil)
+           }
+       })
         
         button.tintColor = .white
         button.layer.cornerRadius = 10
@@ -101,7 +118,7 @@ class LogInViewController: UIViewController, Coordinatable {
     
     private lazy var bruteForceButton: CustomButton = {
         let button = CustomButton(title: "Brute Force on", color: .systemGreen) { [weak self] in
-            self?.bruteForce(passwordToUnlock: "h")
+            self?.startBruteForce()
         }
         
         button.tintColor = .white
@@ -221,30 +238,27 @@ class LogInViewController: UIViewController, Coordinatable {
         NSLayoutConstraint.activate(constraints)
     }
     
-    private func bruteForce(passwordToUnlock: String) {
-        let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
-        var password: String = ""
-        
-        activityIndicator.startAnimating()
+    private func startBruteForce() {
+            let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
+            var password: String = ""
+            
+            activityIndicator.startAnimating()
 
-        DispatchQueue.global().async { [self] in
-            while delegate?.inspect(emailOrPhone: "Baby Yoda", password: password) != true {
-                password = bruteForce.generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
-                
-                print(password)
-                
-                if password == passwordToUnlock {
-                    DispatchQueue.main.async {
-                        activityIndicator.stopAnimating()
+            DispatchQueue.global().async { [self] in
+                while delegate?.inspect(emailOrPhone: "Baby Yoda", password: password) != true {
+                    password = bruteForce.generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
                     
-                        usersPassword.text = password
-                        usersPassword.isSecureTextEntry = false
-                    }
+                    print(password)
+                }
+                
+                DispatchQueue.main.async {
+                    activityIndicator.stopAnimating()
+                
+                    usersPassword.text = password
+                    usersPassword.isSecureTextEntry = false
                 }
             }
         }
-    }
-
     
     @objc private func keyboadWillShow(notification: NSNotification) {
         if let keyboardSize =
@@ -260,8 +274,9 @@ class LogInViewController: UIViewController, Coordinatable {
         scrollView.contentInset.bottom = .zero
         scrollView.verticalScrollIndicatorInsets = .zero
     }
-    
-    private func tapButton() {
+
+// MARK: Задание 1
+    private func tapButton() throws {
         
         if delegate?.inspect(emailOrPhone: usersEmailOrPhone.text!,
                              password: usersPassword.text!) == true {
@@ -269,17 +284,7 @@ class LogInViewController: UIViewController, Coordinatable {
             
             navigationController?.pushViewController(ProfileViewController(), animated: true)
         } else {
-            
-            let alertController = UIAlertController(title: "Неправильно введен логин или пароль",
-                                        message: "Попробуйте ввести заново",
-                                        preferredStyle: .alert)
-            
-            let cancelAction = UIAlertAction(title: "ОК", style: .default)
-            
-            
-            alertController.addAction(cancelAction)
-            
-            self.present(alertController, animated: true, completion: nil)
+            throw AppErrors.incorrectPassword
         }
     }
 }
