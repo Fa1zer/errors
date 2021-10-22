@@ -118,7 +118,7 @@ class LogInViewController: UIViewController, Coordinatable {
     
     private lazy var bruteForceButton: CustomButton = {
         let button = CustomButton(title: "Brute Force on", color: .systemGreen) { [weak self] in
-            self?.bruteForce(passwordToUnlock: "h")
+            self?.startBruteForce()
         }
         
         button.tintColor = .white
@@ -238,30 +238,27 @@ class LogInViewController: UIViewController, Coordinatable {
         NSLayoutConstraint.activate(constraints)
     }
     
-    private func bruteForce(passwordToUnlock: String) {
-        let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
-        var password: String = ""
-        
-        activityIndicator.startAnimating()
+    private func startBruteForce() {
+            let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
+            var password: String = ""
+            
+            activityIndicator.startAnimating()
 
-        DispatchQueue.global().async { [self] in
-            while delegate?.inspect(emailOrPhone: "Baby Yoda", password: password) != true {
-                password = bruteForce.generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
-                
-                print(password)
-                
-                if password == passwordToUnlock {
-                    DispatchQueue.main.async {
-                        activityIndicator.stopAnimating()
+            DispatchQueue.global().async { [self] in
+                while delegate?.inspect(emailOrPhone: "Baby Yoda", password: password) != true {
+                    password = bruteForce.generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
                     
-                        usersPassword.text = password
-                        usersPassword.isSecureTextEntry = false
-                    }
+                    print(password)
+                }
+                
+                DispatchQueue.main.async {
+                    activityIndicator.stopAnimating()
+                
+                    usersPassword.text = password
+                    usersPassword.isSecureTextEntry = false
                 }
             }
         }
-    }
-
     
     @objc private func keyboadWillShow(notification: NSNotification) {
         if let keyboardSize =
