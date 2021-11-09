@@ -13,7 +13,7 @@ protocol LogInViewControllerDelegate {
     func inspect(emailOrPhone: String, password: String) -> Bool
 }
 
-class LogInInspector: LogInViewControllerDelegate {
+final class LogInInspector: LogInViewControllerDelegate {
     func inspect(emailOrPhone: String, password: String) -> Bool {
         return Checker.checker.check(emailOrPhone: emailOrPhone, password: password)
     }

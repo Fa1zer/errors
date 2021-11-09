@@ -18,6 +18,7 @@
 		A197C37E510903E4079C0BE7 /* Pods_StorageService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F18A1AC026FB924631232AA6 /* Pods_StorageService.framework */; };
 		E3171751270A2213001DC474 /* BruteForce.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3171750270A2213001DC474 /* BruteForce.swift */; };
 		E318365626AEBC0E0067668E /* PhotosTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E318365526AEBC0E0067668E /* PhotosTableViewCell.swift */; };
+		E3190B79271B3F0F00805A14 /* AppErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3190B78271B3F0F00805A14 /* AppErrors.swift */; };
 		E32C7E9D2663DEDA00C3014E /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32C7E9C2663DEDA00C3014E /* ProfileHeaderView.swift */; };
 		E32E829D26FF7FA7008482A7 /* FeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32E829C26FF7FA7008482A7 /* FeedViewModel.swift */; };
 		E32E829F26FF81D3008482A7 /* FeedOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32E829E26FF81D3008482A7 /* FeedOutput.swift */; };
@@ -37,6 +38,8 @@
 		E3AF9DD026DE55C000665FFC /* LogInInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AF9DCF26DE55C000665FFC /* LogInInspector.swift */; };
 		E3BC1FB92695E73A0075EB4B /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BC1FB82695E73A0075EB4B /* LogInViewController.swift */; };
 		E3BC834926D39ADB00061E45 /* Checker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BC834826D39ADB00061E45 /* Checker.swift */; };
+		E3D56A9A273AD430003F3841 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D56A99273AD430003F3841 /* NetworkService.swift */; };
+		E3D56A9C273AD7C1003F3841 /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D56A9B273AD7C1003F3841 /* AppConfiguration.swift */; };
 		E3F4262A26FCF7CC00AB08E7 /* Coordinatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F4262926FCF7CC00AB08E7 /* Coordinatable.swift */; };
 		E3F4262C26FCF99F00AB08E7 /* CreateModuleFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F4262B26FCF99F00AB08E7 /* CreateModuleFactory.swift */; };
 		E3FA097B26DF8197003E4057 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FA097A26DF8197003E4057 /* CustomButton.swift */; };
@@ -89,6 +92,7 @@
 		C6D37837A7CAE87FA02453A8 /* Pods-StorageService.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StorageService.debug.xcconfig"; path = "Target Support Files/Pods-StorageService/Pods-StorageService.debug.xcconfig"; sourceTree = "<group>"; };
 		E3171750270A2213001DC474 /* BruteForce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BruteForce.swift; sourceTree = "<group>"; };
 		E318365526AEBC0E0067668E /* PhotosTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosTableViewCell.swift; sourceTree = "<group>"; };
+		E3190B78271B3F0F00805A14 /* AppErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppErrors.swift; sourceTree = "<group>"; };
 		E32C7E9C2663DEDA00C3014E /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
 		E32E829C26FF7FA7008482A7 /* FeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewModel.swift; sourceTree = "<group>"; };
 		E32E829E26FF81D3008482A7 /* FeedOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedOutput.swift; sourceTree = "<group>"; };
@@ -107,6 +111,8 @@
 		E3AF9DCF26DE55C000665FFC /* LogInInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInInspector.swift; sourceTree = "<group>"; };
 		E3BC1FB82695E73A0075EB4B /* LogInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		E3BC834826D39ADB00061E45 /* Checker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Checker.swift; path = Navigation/LogIn/Checker.swift; sourceTree = SOURCE_ROOT; };
+		E3D56A99273AD430003F3841 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		E3D56A9B273AD7C1003F3841 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		E3F4262926FCF7CC00AB08E7 /* Coordinatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinatable.swift; sourceTree = "<group>"; };
 		E3F4262B26FCF99F00AB08E7 /* CreateModuleFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateModuleFactory.swift; sourceTree = "<group>"; };
 		E3FA097A26DF8197003E4057 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
@@ -162,6 +168,8 @@
 		060782B0250CE27700A87020 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
+				E3D56A98273AD40B003F3841 /* NetworkServices */,
+				E3190B77271B3EDD00805A14 /* AppErrors */,
 				E3FA098926E55760003E4057 /* CustomUIElements */,
 				E32C7E9B2663DEA500C3014E /* Profile */,
 				E3FA098626E556BB003E4057 /* LogIn */,
@@ -212,6 +220,14 @@
 			path = BruteForce;
 			sourceTree = "<group>";
 		};
+		E3190B77271B3EDD00805A14 /* AppErrors */ = {
+			isa = PBXGroup;
+			children = (
+				E3190B78271B3F0F00805A14 /* AppErrors.swift */,
+			);
+			path = AppErrors;
+			sourceTree = "<group>";
+		};
 		E32C7E9B2663DEA500C3014E /* Profile */ = {
 			isa = PBXGroup;
 			children = (
@@ -231,6 +247,15 @@
 				E3664B4926C9487F00C7623C /* Info.plist */,
 			);
 			path = StorageService;
+			sourceTree = "<group>";
+		};
+		E3D56A98273AD40B003F3841 /* NetworkServices */ = {
+			isa = PBXGroup;
+			children = (
+				E3D56A99273AD430003F3841 /* NetworkService.swift */,
+				E3D56A9B273AD7C1003F3841 /* AppConfiguration.swift */,
+			);
+			path = NetworkServices;
 			sourceTree = "<group>";
 		};
 		E3FA098526E55686003E4057 /* SupportingFiles */ = {
@@ -527,8 +552,10 @@
 				E369E05326B19366002EA616 /* PhotosCollectionViewCell.swift in Sources */,
 				E3171751270A2213001DC474 /* BruteForce.swift in Sources */,
 				E3FA098126E540C0003E4057 /* SecondNavigationController.swift in Sources */,
+				E3D56A9C273AD7C1003F3841 /* AppConfiguration.swift in Sources */,
 				E32E829F26FF81D3008482A7 /* FeedOutput.swift in Sources */,
 				E32C7E9D2663DEDA00C3014E /* ProfileHeaderView.swift in Sources */,
+				E3190B79271B3F0F00805A14 /* AppErrors.swift in Sources */,
 				E3BC834926D39ADB00061E45 /* Checker.swift in Sources */,
 				060782B4250CE27700A87020 /* SceneDelegate.swift in Sources */,
 				E32E82A326FF99CA008482A7 /* FeedCofiguration.swift in Sources */,
@@ -544,6 +571,7 @@
 				E3FA097B26DF8197003E4057 /* CustomButton.swift in Sources */,
 				E32E82A126FF81E5008482A7 /* FeedInput.swift in Sources */,
 				E3BC1FB92695E73A0075EB4B /* LogInViewController.swift in Sources */,
+				E3D56A9A273AD430003F3841 /* NetworkService.swift in Sources */,
 				060782C8250CEE5D00A87020 /* PostViewController.swift in Sources */,
 				E3AF9DD026DE55C000665FFC /* LogInInspector.swift in Sources */,
 			);

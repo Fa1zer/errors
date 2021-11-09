@@ -9,7 +9,7 @@
 import UIKit
 import SnapKit
 
-class ProfileTimerFooterView: UIView {
+final class ProfileTimerFooterView: UIView {
 
     let timerLabel: UILabel = {
        let label = UILabel()

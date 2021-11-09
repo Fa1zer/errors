@@ -9,7 +9,7 @@
 import UIKit
 import SnapKit
 
-class InfoViewController: UIViewController, Coordinatable {
+final class InfoViewController: UIViewController, Coordinatable {
     
     var callTabBar: (() -> Void)?
     weak var tabBar: TabBarController?

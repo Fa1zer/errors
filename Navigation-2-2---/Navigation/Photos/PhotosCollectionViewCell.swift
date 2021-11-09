@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PhotosCollectionViewCell: UICollectionViewCell {
+final class PhotosCollectionViewCell: UICollectionViewCell {
     var image: UIImageView? {
         didSet {
             image?.clipsToBounds = true
