@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CreateModuleFactory {
+final class CreateModuleFactory {
     func createModule(navigatinController: FirstNavigationController) {
         let viewModel = FeedViewModel()
         

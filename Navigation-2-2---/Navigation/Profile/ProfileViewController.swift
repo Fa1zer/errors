@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController, Coordinatable {
+final class ProfileViewController: UIViewController, Coordinatable {
     
     weak var tabBar: TabBarController?
     var callTabBar: (() -> Void)?
@@ -130,12 +130,16 @@ class ProfileViewController: UIViewController, Coordinatable {
         dateComponents.second = 30
         
         self.date = dateComponents
-        
+//MARK: Задание 4
         let firstTimer = Timer(timeInterval: 90, repeats: true) { timer in
+            let internetConnection = Bool.random()
+            
+            guard internetConnection else { preconditionFailure() }
+            
             self.date!.minute = 1
             self.date!.second = 30
             
-            self.footerView.timerLabel.text = "До обновления осталось: \(self.date!.minute!) минутself. \(self.date!.second!) секунд."
+            self.footerView.timerLabel.text = "До обновления осталось: \(self.date!.minute!) минут \(self.date!.second!) секунд."
             
             let alertController = UIAlertController(title: "Страница была обновлена",
                                         message: nil,

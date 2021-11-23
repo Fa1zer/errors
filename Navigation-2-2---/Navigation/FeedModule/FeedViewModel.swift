@@ -8,7 +8,7 @@
 
 import Foundation
 
-class FeedViewModel: FeedOutput, FeedInput, Coordinatable {
+final class FeedViewModel: FeedOutput, FeedInput, Coordinatable {
     let model = FeedModel()
     
     weak var tabBar: TabBarController?
