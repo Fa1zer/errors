@@ -7,21 +7,38 @@
 //
 
 import UIKit
+import FirebaseAuth
 
-class LogInViewController: UIViewController, Coordinatable {
+final class LogInViewController: UIViewController, Coordinatable {
     
     var callTabBar: (() -> Void)?
     weak var tabBar: TabBarController?
     var delegate: LogInViewControllerDelegate?
     
-    
+    private var bruteForceComplite = false
     private let bruteForce = BruteForce()
     private let color = UIColor(patternImage: UIImage(named: "blue_pixel")!)
-    
+
     private lazy var logInButton: CustomButton = {
        let button = CustomButton(title: "Log In",
                                  color: color,
-                                 target: { [weak self] in self?.tapButton() })
+                                 target: { [weak self] in
+           do {
+               try self?.tapButton()
+           } catch {
+               
+               let alertController = UIAlertController(title: "Поля пароля или логина пустые",
+                                           message: "Заполните их",
+                                           preferredStyle: .alert)
+
+               let cancelAction = UIAlertAction(title: "ОК", style: .default)
+
+
+               alertController.addAction(cancelAction)
+
+               self?.present(alertController, animated: true, completion: nil)
+           }
+       })
         
         button.tintColor = .white
         button.layer.cornerRadius = 10
@@ -101,7 +118,7 @@ class LogInViewController: UIViewController, Coordinatable {
     
     private lazy var bruteForceButton: CustomButton = {
         let button = CustomButton(title: "Brute Force on", color: .systemGreen) { [weak self] in
-            self?.bruteForce(passwordToUnlock: "h")
+            self?.startBruteForce()
         }
         
         button.tintColor = .white
@@ -219,38 +236,72 @@ class LogInViewController: UIViewController, Coordinatable {
         ]
         
         NSLayoutConstraint.activate(constraints)
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("logIn"), object: nil,
+                                               queue: nil) { [weak self] _ in
+            
+            self?.usersPassword.isSecureTextEntry = true
+            
+            self?.navigationController?.pushViewController(ProfileViewController(), animated: true)
+            
+            self?.bruteForceComplite = true
+        }
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("noLogIn"), object: nil,
+                                               queue: nil) { [weak self] _ in
+            
+            let alertController = UIAlertController(title: "Пользователь не зарегистрирован.",
+                                        message: "Зарегистрировать пользователя?",
+                                        preferredStyle: .alert)
+
+            let cancelActionFirst = UIAlertAction(title: "Да", style: .default) { action in
+                self?.addUsser(emailOrPhone: (self?.usersEmailOrPhone.text)!,
+                         password: (self?.usersPassword.text)!)
+            }
+            
+            let cancelActionSecond = UIAlertAction(title: "Нет", style: .cancel)
+
+            alertController.addAction(cancelActionFirst)
+            alertController.addAction(cancelActionSecond)
+
+            self?.present(alertController, animated: true, completion: nil)
+            
+            self?.bruteForceComplite = false
+        }
     }
     
-    private func bruteForce(passwordToUnlock: String) {
-        let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
-        var password: String = ""
-        
-        activityIndicator.startAnimating()
+    private func startBruteForce() {
+            let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
+            var password: String = ""
 
-        DispatchQueue.global().async { [self] in
-            while delegate?.inspect(emailOrPhone: "Baby Yoda", password: password) != true {
-                password = bruteForce.generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
-                
-                print(password)
-                
-                if password == passwordToUnlock {
-                    DispatchQueue.main.async {
-                        activityIndicator.stopAnimating()
+            activityIndicator.startAnimating()
+
+            DispatchQueue.global().sync { [self] in
+                while bruteForceComplite == false {
                     
-                        usersPassword.text = password
-                        usersPassword.isSecureTextEntry = false
-                    }
+                    password = bruteForce.generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
+
+                    print(password)
+                    
+                    delegate!.inspect(emailOrPhone: usersEmailOrPhone.text!,
+                                      password: usersPassword.text!)
                 }
+
+            DispatchQueue.main.async {
+                activityIndicator.stopAnimating()
+
+                usersPassword.text = password
+                usersPassword.isSecureTextEntry = false
             }
         }
     }
-
     
     @objc private func keyboadWillShow(notification: NSNotification) {
         if let keyboardSize =
             (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             scrollView.contentInset.bottom = keyboardSize.height
-            scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0,
+            scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0,
+                                                                    left: 0,
                                                                     bottom: keyboardSize.height,
                                                                     right: 0)
         }
@@ -260,26 +311,40 @@ class LogInViewController: UIViewController, Coordinatable {
         scrollView.contentInset.bottom = .zero
         scrollView.verticalScrollIndicatorInsets = .zero
     }
-    
-    private func tapButton() {
+
+    private func tapButton() throws {
         
-        if delegate?.inspect(emailOrPhone: usersEmailOrPhone.text!,
-                             password: usersPassword.text!) == true {
-            usersPassword.isSecureTextEntry = true
+        guard let usersEmailOrPhoneText = usersEmailOrPhone.text, !usersEmailOrPhoneText.isEmpty,
+              let usersPasswordText = usersPassword.text, !usersPasswordText.isEmpty else {
+                  
+                  throw LogInErrors.fieldsIsEmpty
+              }
+        
+        delegate!.inspect(emailOrPhone: usersEmailOrPhoneText, password: usersPasswordText)
+    }
+    
+    private func addUsser(emailOrPhone: String, password: String) {
+        FirebaseAuth.Auth.auth().createUser(withEmail: emailOrPhone, password: password) { [weak self]
+            result, error in
             
-            navigationController?.pushViewController(ProfileViewController(), animated: true)
-        } else {
+            var status = "Пользователь зарегестрирован"
             
-            let alertController = UIAlertController(title: "Неправильно введен логин или пароль",
-                                        message: "Попробуйте ввести заново",
+            if let _ = error {
+                status = "Произошла ошбка"
+            }
+            
+            
+            let alertController = UIAlertController(title: status,
+                                        message: nil,
                                         preferredStyle: .alert)
-            
+
             let cancelAction = UIAlertAction(title: "ОК", style: .default)
             
             
             alertController.addAction(cancelAction)
             
-            self.present(alertController, animated: true, completion: nil)
+            
+            self?.present(alertController, animated: true, completion: nil)
         }
     }
 }

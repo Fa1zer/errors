@@ -9,7 +9,7 @@
 import UIKit
 import StorageService
 
-class PostViewController: UIViewController, Coordinatable {
+final class PostViewController: UIViewController, Coordinatable {
     
     var callTabBar: (() -> Void)?
     weak var tabBar: TabBarController?
