@@ -11,4 +11,5 @@ import Foundation
 
 enum LogInErrors: Error {
     case fieldsIsEmpty
+    case passwordIsShort
 }

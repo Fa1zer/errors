@@ -236,38 +236,6 @@ final class LogInViewController: UIViewController, Coordinatable {
         ]
         
         NSLayoutConstraint.activate(constraints)
-        
-        NotificationCenter.default.addObserver(forName: NSNotification.Name("logIn"), object: nil,
-                                               queue: nil) { [weak self] _ in
-            
-            self?.usersPassword.isSecureTextEntry = true
-            
-            self?.navigationController?.pushViewController(ProfileViewController(), animated: true)
-            
-            self?.bruteForceComplite = true
-        }
-        
-        NotificationCenter.default.addObserver(forName: NSNotification.Name("noLogIn"), object: nil,
-                                               queue: nil) { [weak self] _ in
-            
-            let alertController = UIAlertController(title: "Пользователь не зарегистрирован.",
-                                        message: "Зарегистрировать пользователя?",
-                                        preferredStyle: .alert)
-
-            let cancelActionFirst = UIAlertAction(title: "Да", style: .default) { action in
-                self?.addUsser(emailOrPhone: (self?.usersEmailOrPhone.text)!,
-                         password: (self?.usersPassword.text)!)
-            }
-            
-            let cancelActionSecond = UIAlertAction(title: "Нет", style: .cancel)
-
-            alertController.addAction(cancelActionFirst)
-            alertController.addAction(cancelActionSecond)
-
-            self?.present(alertController, animated: true, completion: nil)
-            
-            self?.bruteForceComplite = false
-        }
     }
     
     private func startBruteForce() {
@@ -283,8 +251,10 @@ final class LogInViewController: UIViewController, Coordinatable {
 
                     print(password)
                     
-                    delegate!.inspect(emailOrPhone: usersEmailOrPhone.text!,
-                                      password: usersPassword.text!)
+                    delegate?.inspect(emailOrPhone: usersEmailOrPhone.text!,
+                                      password: usersPassword.text!,
+                                      logInCompletion: logInCompletion,
+                                      notLogInCompletion: notLogInCompletion)
                 }
 
             DispatchQueue.main.async {
@@ -294,6 +264,36 @@ final class LogInViewController: UIViewController, Coordinatable {
                 usersPassword.isSecureTextEntry = false
             }
         }
+    }
+    
+    private func logInCompletion() {
+        
+        usersPassword.isSecureTextEntry = true
+        
+        navigationController?.pushViewController(ProfileViewController(), animated: true)
+        
+        bruteForceComplite = true
+    }
+    
+    private func notLogInCompletion() {
+        
+        let alertController = UIAlertController(title: "Пользователь не зарегистрирован.",
+                                    message: "Зарегистрировать пользователя?",
+                                    preferredStyle: .alert)
+
+        let cancelActionFirst = UIAlertAction(title: "Да", style: .default) { [weak self] action in
+            self?.addUsser(emailOrPhone: (self?.usersEmailOrPhone.text)!,
+                           password: (self?.usersPassword.text)!)
+        }
+        
+        let cancelActionSecond = UIAlertAction(title: "Нет", style: .cancel)
+
+        alertController.addAction(cancelActionFirst)
+        alertController.addAction(cancelActionSecond)
+
+        present(alertController, animated: true, completion: nil)
+        
+        bruteForceComplite = false
     }
     
     @objc private func keyboadWillShow(notification: NSNotification) {
@@ -320,7 +320,10 @@ final class LogInViewController: UIViewController, Coordinatable {
                   throw LogInErrors.fieldsIsEmpty
               }
         
-        delegate!.inspect(emailOrPhone: usersEmailOrPhoneText, password: usersPasswordText)
+        delegate?.inspect(emailOrPhone: usersEmailOrPhoneText,
+                          password: usersPasswordText,
+                          logInCompletion: logInCompletion,
+                          notLogInCompletion: notLogInCompletion)
     }
     
     private func addUsser(emailOrPhone: String, password: String) {
@@ -328,14 +331,20 @@ final class LogInViewController: UIViewController, Coordinatable {
             result, error in
             
             var status = "Пользователь зарегестрирован"
+            var message: String? = nil
             
             if let _ = error {
                 status = "Произошла ошбка"
+                message = "Повторите попытку позже"
             }
             
+            if password.count < 6 {
+                status = "Слишком короткий пароль"
+                message = "Длина пароля должен быть более 5 символов"
+            }
             
             let alertController = UIAlertController(title: status,
-                                        message: nil,
+                                        message: message,
                                         preferredStyle: .alert)
 
             let cancelAction = UIAlertAction(title: "ОК", style: .default)
