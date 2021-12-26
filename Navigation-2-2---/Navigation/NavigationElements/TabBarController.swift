@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TabBarController: UITabBarController {
+final class TabBarController: UITabBarController {
     
     private let profileViewController = ProfileViewController()
     private let logInViewController = LogInViewController()
