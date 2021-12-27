@@ -9,9 +9,9 @@
 import UIKit
 import SnapKit
 
-class ProfileHeaderView: UIView {
+final class ProfileHeaderView: UIView {
 
-    private var statusText = "Вы можете добавить статус"
+    private var statusText: String? = nil
     
     internal let avatarImageView: UIImageView = {
         let image = UIImage(named: "baby yoda")
@@ -72,7 +72,6 @@ class ProfileHeaderView: UIView {
 
         edit.font = UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.regular)
         edit.tintColor = .black
-        edit.backgroundColor = .white
         edit.layer.cornerRadius = 12
         edit.layer.borderWidth = 1
         edit.layer.borderColor = UIColor.black.cgColor
@@ -149,15 +148,24 @@ class ProfileHeaderView: UIView {
     }
 
     private func buttonPressed() {
-        print(statusLabel.text!)
-
-        statusLabel.text = statusText
-        statusLabel.sizeToFit()
+        do {
+            statusLabel.text = try status()
+        
+            print(statusLabel.text! )
+        } catch {
+            print("Поле статуса пусто")
+        }
+    }
+    
+    private func status() throws -> String {
+        guard statusText != nil else {
+            throw AppErrors.emptyStatus
+        }
+        
+        return statusText!
     }
 
     @objc func statusTextChanged(_ sender: UITextField) {
         statusText = setStatusTextField.text!
     }
-    
-    
 }
