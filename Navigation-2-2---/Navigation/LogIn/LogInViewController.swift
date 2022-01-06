@@ -16,6 +16,7 @@ final class LogInViewController: UIViewController, Coordinatable {
         super.init(nibName: nibName, bundle: bundle)
 
         DispatchQueue.main.async { [weak self] in
+<<<<<<< HEAD
             guard let _ = self?.realm.objects(LogInModel.self) else { return }
         }
 
@@ -26,6 +27,20 @@ final class LogInViewController: UIViewController, Coordinatable {
         }
 
         try? tapButton()
+=======
+
+            guard let models = self?.realm.objects(LogInModel.self) else { return }
+
+            for model in models {
+
+                self?.usersEmailOrPhone.text = model.email
+                self?.usersPassword.text = model.password
+            }
+
+            try? self?.tapButton()
+
+        }
+>>>>>>> origin/realm
     }
 
     required init?(coder: NSCoder) {
@@ -268,11 +283,19 @@ final class LogInViewController: UIViewController, Coordinatable {
 
             DispatchQueue.global().sync { [self] in
                 while bruteForceComplete == false {
+<<<<<<< HEAD
                     
                     password = bruteForce.generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
 
                     print(password)
                     
+=======
+                    
+                    password = bruteForce.generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
+
+                    print(password)
+                    
+>>>>>>> origin/realm
                     delegate?.inspect(emailOrPhone: usersEmailOrPhone.text!,
                                       password: usersPassword.text!,
                                       logInCompletion: logInCompletion,
@@ -304,6 +327,7 @@ final class LogInViewController: UIViewController, Coordinatable {
         realm.beginWrite()
 
         realm.add(logInModel)
+<<<<<<< HEAD
 
         try? realm.commitWrite()
     }
@@ -314,6 +338,18 @@ final class LogInViewController: UIViewController, Coordinatable {
                                     message: "Зарегистрировать пользователя?",
                                     preferredStyle: .alert)
 
+=======
+
+        try? realm.commitWrite()
+    }
+    
+    private func notLogInCompletion() {
+        
+        let alertController = UIAlertController(title: "Пользователь не зарегистрирован.",
+                                    message: "Зарегистрировать пользователя?",
+                                    preferredStyle: .alert)
+
+>>>>>>> origin/realm
         let cancelActionFirst = UIAlertAction(title: "Да", style: .default) { [weak self] action in
             self?.addUsser(emailOrPhone: (self?.usersEmailOrPhone.text)!,
                            password: (self?.usersPassword.text)!)
@@ -352,6 +388,7 @@ final class LogInViewController: UIViewController, Coordinatable {
                   
                   throw LogInErrors.fieldsIsEmpty
               }
+<<<<<<< HEAD
         DispatchQueue.global().async { [weak self] in
             
             self?.delegate?.inspect(emailOrPhone: usersEmailOrPhoneText,
@@ -359,6 +396,13 @@ final class LogInViewController: UIViewController, Coordinatable {
                                     logInCompletion: self!.logInCompletion,
                                     notLogInCompletion: self!.notLogInCompletion)
         }
+=======
+        
+        delegate?.inspect(emailOrPhone: usersEmailOrPhoneText,
+                          password: usersPasswordText,
+                          logInCompletion: logInCompletion,
+                          notLogInCompletion: notLogInCompletion)
+>>>>>>> origin/realm
     }
     
     private func addUsser(emailOrPhone: String, password: String) {
