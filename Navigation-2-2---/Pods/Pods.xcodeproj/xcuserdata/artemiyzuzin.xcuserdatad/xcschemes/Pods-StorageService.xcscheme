@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "70CA38CB6019B5AFED49D6B7EDE899E3"
-               BuildableName = "Pods_StorageService.framework"
+               BuildableName = "Pods-StorageService.framework"
                BlueprintName = "Pods-StorageService"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

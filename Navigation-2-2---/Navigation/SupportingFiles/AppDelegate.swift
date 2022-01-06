@@ -8,10 +8,7 @@
 
 import UIKit
 import Firebase
-<<<<<<< HEAD
 import CoreData
-=======
->>>>>>> origin/realm
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
