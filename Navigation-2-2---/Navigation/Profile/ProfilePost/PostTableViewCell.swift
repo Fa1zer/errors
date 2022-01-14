@@ -155,19 +155,19 @@ final class PostTableViewCell: UITableViewCell {
     }
     
     @objc private func doubleTap() {
-        DispatchQueue.main.async { [weak self] in
-            let context = (self?.persistentContainer.viewContext)!
+        DispatchQueue.main.async { [ self ] in
+            let context = persistentContainer.viewContext
             
             guard let entity = NSEntityDescription.entity(forEntityName: "CoreDataPosts", in: context)
             else { return }
             
             let postObject = CoreDataPosts(entity: entity, insertInto: context)
             
-            postObject.text = self?.post?.description
-            postObject.title = self?.post?.autor
-            postObject.imageName = self?.post?.image
-            postObject.numberLikes = Int16(self?.post?.likes ?? 0)
-            postObject.numberViews = Int16(self?.post?.views ?? 0)
+            postObject.text = post?.description
+            postObject.title = post?.autor
+            postObject.imageName = post?.image
+            postObject.numberLikes = Int16(post?.likes ?? 0)
+            postObject.numberViews = Int16(post?.views ?? 0)
             
             do {
                 try context.save()
