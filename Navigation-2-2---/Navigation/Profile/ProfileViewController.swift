@@ -141,7 +141,7 @@ final class ProfileViewController: UIViewController, Coordinatable {
         
         exit.addGestureRecognizer(tapExitGesture)
         
-        var dateComponents  = DateComponents()
+        var dateComponents = DateComponents()
         
         dateComponents.minute = 1
         dateComponents.second = 30
@@ -263,17 +263,21 @@ final class ProfileViewController: UIViewController, Coordinatable {
 }
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) ->
-    CGFloat{ 220 }
+    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat{
+        return 220
+    }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
-    { UITableView.automaticDimension }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
-    { headerView }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return headerView
+    }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
-    { posts.count + 1 }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return posts.count + 1
+    }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard indexPath.row != 0 else {

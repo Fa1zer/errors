@@ -16,18 +16,16 @@ final class LogInViewController: UIViewController, Coordinatable {
         super.init(nibName: nibName, bundle: bundle)
 
         DispatchQueue.main.async { [weak self] in
-
-            guard let models = self?.realm.objects(LogInModel.self) else { return }
-
-            for model in models {
-
-                self?.usersEmailOrPhone.text = model.email
-                self?.usersPassword.text = model.password
-            }
-
-            try? self?.tapButton()
-
+            guard let _ = self?.realm.objects(LogInModel.self) else { return }
         }
+
+        for model in realm.objects(LogInModel.self) {
+
+            usersEmailOrPhone.text = model.email
+            usersPassword.text = model.password
+        }
+
+        try? tapButton()
     }
 
     required init?(coder: NSCoder) {
@@ -355,10 +353,15 @@ final class LogInViewController: UIViewController, Coordinatable {
                   throw LogInErrors.fieldsIsEmpty
               }
         
-        delegate?.inspect(emailOrPhone: usersEmailOrPhoneText,
-                          password: usersPasswordText,
-                          logInCompletion: logInCompletion,
-                          notLogInCompletion: notLogInCompletion)
+        DispatchQueue.global().async { [ weak self ] in
+            
+            guard let self = self else { return }
+            
+            self.delegate?.inspect(emailOrPhone: usersEmailOrPhoneText,
+                                    password: usersPasswordText,
+                                    logInCompletion: self.logInCompletion,
+                                    notLogInCompletion: self.notLogInCompletion)
+        }
     }
     
     private func addUsser(emailOrPhone: String, password: String) {
