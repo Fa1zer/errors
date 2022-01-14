@@ -345,13 +345,14 @@ final class LogInViewController: UIViewController, Coordinatable {
         scrollView.verticalScrollIndicatorInsets = .zero
     }
 
-    private func tapButton() throws {
+   private func tapButton() throws {
         
         guard let usersEmailOrPhoneText = usersEmailOrPhone.text, !usersEmailOrPhoneText.isEmpty,
               let usersPasswordText = usersPassword.text, !usersPasswordText.isEmpty else {
                   
                   throw LogInErrors.fieldsIsEmpty
               }
+       
         DispatchQueue.global().async { [weak self] in
             
             self?.delegate?.inspect(emailOrPhone: usersEmailOrPhoneText,
@@ -359,7 +360,7 @@ final class LogInViewController: UIViewController, Coordinatable {
                                     logInCompletion: self!.logInCompletion,
                                     notLogInCompletion: self!.notLogInCompletion)
         }
-    }
+   }
     
     private func addUsser(emailOrPhone: String, password: String) {
         FirebaseAuth.Auth.auth().createUser(withEmail: emailOrPhone, password: password) { [weak self]
