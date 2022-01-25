@@ -173,17 +173,20 @@ extension SaveViewController: UITableViewDelegate, UITableViewDataSource {
         
         let contextualAction = UIContextualAction(style: .normal, title: "Удалить") { [ weak self ] _, _, _ in
             
-            let object = (self?.posts[indexPath.row])! as NSManagedObject
-            let context = (self?.persistentContainer.viewContext)!
+            guard let self = self else { return }
+            
+            let object = self.posts[indexPath.row] as NSManagedObject
+            let context = self.persistentContainer.newBackgroundContext()
             let fetchRequest: NSFetchRequest<CoreDataPosts> = CoreDataPosts.fetchRequest()
-            
-            context.delete(object)
-            
+                        
             context.perform {
+                
+                context.delete(object)
+                
                 do {
                     try context.save()
                     
-                    self?.posts = try context.fetch(fetchRequest)
+                    self.posts = try context.fetch(fetchRequest)
                     
                     tableView.reloadData()
                     
