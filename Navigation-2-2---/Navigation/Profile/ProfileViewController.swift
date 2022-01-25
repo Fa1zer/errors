@@ -260,6 +260,7 @@ final class ProfileViewController: UIViewController, Coordinatable {
             exit.isHidden = true
         }
     }
+    
 }
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {

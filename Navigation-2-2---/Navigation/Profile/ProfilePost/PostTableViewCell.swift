@@ -31,7 +31,7 @@ final class PostTableViewCell: UITableViewCell {
             descriptionPost.text = post!.description
             
             imageProcessor.processImage(sourceImage: UIImage(named: post!.image)!,
-                                        filter: .allCases.randomElement()!) { [weak self] (image: UIImage?) in
+                                        filter: .allCases.randomElement()!) { [ weak self ] (image: UIImage?) in
                 self?.imagePost.image = image
             }
         }
@@ -156,7 +156,8 @@ final class PostTableViewCell: UITableViewCell {
     
     @objc private func doubleTap() {
         DispatchQueue.main.async { [ self ] in
-            let context = persistentContainer.viewContext
+            
+            let context = persistentContainer.newBackgroundContext()
             
             guard let entity = NSEntityDescription.entity(forEntityName: "CoreDataPosts", in: context)
             else { return }
@@ -169,12 +170,14 @@ final class PostTableViewCell: UITableViewCell {
             postObject.numberLikes = Int16(post?.likes ?? 0)
             postObject.numberViews = Int16(post?.views ?? 0)
             
-            do {
-                try context.save()
-                
-                NotificationCenter.default.post(name: NSNotification.Name("save"), object: nil)
-            } catch {
-                print(error.localizedDescription)
+            context.perform {
+                do {
+                    try context.save()
+                    
+                    NotificationCenter.default.post(name: NSNotification.Name("save"), object: nil)
+                } catch {
+                    print(error.localizedDescription)
+                }
             }
         }
     }

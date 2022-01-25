@@ -9,6 +9,7 @@
 import UIKit
 import SnapKit
 import CoreData
+import SwiftUI
 
 class SaveViewController: UIViewController, Coordinatable {
     
@@ -51,9 +52,6 @@ class SaveViewController: UIViewController, Coordinatable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = .white
-        self.navigationItem.title = "Save"
-        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(PostTableViewCell.self, forCellReuseIdentifier: cellId)
@@ -69,6 +67,17 @@ class SaveViewController: UIViewController, Coordinatable {
     }
     
     private func setupViews() {
+        self.view.backgroundColor = .white
+        self.navigationItem.title = "Save"
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Применить фильтер",
+                                                                style: .plain,
+                                                                target: self,
+                                                                action: #selector(rightBarButtonTapped))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Сбросить фильтер",
+                                                                style: .plain,
+                                                                target: self,
+                                                                action: #selector(leftBarButtonAction))
+        
         self.view.addSubview(tableView)
 
         tableView.snp.makeConstraints { make in
@@ -76,19 +85,73 @@ class SaveViewController: UIViewController, Coordinatable {
         }
     }
     
+    private func postsFilter(autor: String) {
+        posts = posts.filter({ $0.title == autor })
+    }
+    
     private func save() {
         let context = persistentContainer.viewContext
             
         let fetchRequest: NSFetchRequest<CoreDataPosts> = CoreDataPosts.fetchRequest()
-            
-        do {
-            posts = try context.fetch(fetchRequest)
-            
-            tableView.reloadData()
-        } catch {
-            print(error.localizedDescription)
+         
+        context.perform { [ weak self ] in
+            do {
+                self?.posts = try context.fetch(fetchRequest)
+                
+                self?.tableView.reloadData()
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
+    
+    @objc private func rightBarButtonTapped() {
+        
+        let alertController = UIAlertController(title: "Фильтер по автору поста",
+                                    message: "Введите имя автора",
+                                    preferredStyle: .alert)
+        
+        alertController.addTextField { textField in
+            textField.backgroundColor = .white
+            textField.textColor = .black
+            textField.tintColor = #colorLiteral(red: 0.3675304651, green: 0.5806378722, blue: 0.7843242884, alpha: 1)
+            textField.placeholder = "Имя автора"
+            textField.layer.borderColor = UIColor.black.cgColor
+        }
+
+        let firstAlertAction = UIAlertAction(title: "Добавить фильтер", style: .cancel) { [weak self] _ in
+            
+            self?.postsFilter(autor: (alertController.textFields?.first?.text)!)
+            self?.tableView.reloadData()
+        }
+        
+        let secondAlertAction = UIAlertAction(title: "Нет", style: .default)
+        
+        alertController.addAction(firstAlertAction)
+        alertController.addAction(secondAlertAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    @objc private func leftBarButtonAction() {
+        
+        let alertController = UIAlertController(title: "Удалить фильтр?",
+                                    message: nil,
+                                    preferredStyle: .alert)
+
+        let firstAlertAction = UIAlertAction(title: "да", style: .cancel) { [weak self] _ in
+            
+            self?.save()
+        }
+        
+        let secondAlertAction = UIAlertAction(title: "Нет", style: .default)
+        
+        alertController.addAction(firstAlertAction)
+        alertController.addAction(secondAlertAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
 }
 
 extension SaveViewController: UITableViewDelegate, UITableViewDataSource {
@@ -102,8 +165,40 @@ extension SaveViewController: UITableViewDelegate, UITableViewDataSource {
                                 image: posts[indexPath.row].imageName ?? "",
                                 likes: Int(posts[indexPath.row].numberLikes),
                                 views: Int(posts[indexPath.row].numberViews))
-
+        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let contextualAction = UIContextualAction(style: .normal, title: "Удалить") { [ weak self ] _, _, _ in
+            
+            guard let self = self else { return }
+            
+            let object = self.posts[indexPath.row] as NSManagedObject
+            let context = self.persistentContainer.newBackgroundContext()
+            let fetchRequest: NSFetchRequest<CoreDataPosts> = CoreDataPosts.fetchRequest()
+                        
+            context.perform {
+                
+                context.delete(object)
+                
+                do {
+                    try context.save()
+                    
+                    self.posts = try context.fetch(fetchRequest)
+                    
+                    tableView.reloadData()
+                    
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+        
+        contextualAction.backgroundColor = .systemRed
+        
+        return UISwipeActionsConfiguration(actions: [contextualAction])
     }
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -119,4 +214,9 @@ extension SaveViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
 }
