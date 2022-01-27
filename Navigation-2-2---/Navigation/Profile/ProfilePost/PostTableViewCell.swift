@@ -8,8 +8,9 @@
 
 import UIKit
 import iOSIntPackage
+import CoreData
 
-class PostTableViewCell: UITableViewCell {
+final class PostTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -30,11 +31,25 @@ class PostTableViewCell: UITableViewCell {
             descriptionPost.text = post!.description
             
             imageProcessor.processImage(sourceImage: UIImage(named: post!.image)!,
-                                        filter: .allCases.randomElement()!) { [weak self] (image: UIImage?) in
+                                        filter: .allCases.randomElement()!) { [ weak self ] (image: UIImage?) in
                 self?.imagePost.image = image
             }
         }
     }
+    
+    private let persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "PostModel")
+        
+        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+            
+            if let error = error {
+
+                fatalError("Unresolved error \(error)")
+            }
+        })
+        
+        return container
+    }()
     
     private let autorLabel: UILabel = {
        let autor = UILabel()
@@ -130,5 +145,40 @@ class PostTableViewCell: UITableViewCell {
                           bottomAnchor.constraint(equalTo: likeLabel.bottomAnchor, constant: 16)]
         
         NSLayoutConstraint.activate(constraints)
+        
+        let doubleTapGestureRecognize = UITapGestureRecognizer(target: self,
+                                                               action: #selector(doubleTap))
+        
+        doubleTapGestureRecognize.numberOfTapsRequired = 2
+        
+        self.addGestureRecognizer(doubleTapGestureRecognize)
+    }
+    
+    @objc private func doubleTap() {
+        DispatchQueue.main.async { [ self ] in
+            
+            let context = persistentContainer.newBackgroundContext()
+            
+            guard let entity = NSEntityDescription.entity(forEntityName: "CoreDataPosts", in: context)
+            else { return }
+            
+            let postObject = CoreDataPosts(entity: entity, insertInto: context)
+            
+            postObject.text = post?.description
+            postObject.title = post?.autor
+            postObject.imageName = post?.image
+            postObject.numberLikes = Int16(post?.likes ?? 0)
+            postObject.numberViews = Int16(post?.views ?? 0)
+            
+            context.perform {
+                do {
+                    try context.save()
+                    
+                    NotificationCenter.default.post(name: NSNotification.Name("save"), object: nil)
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+        }
     }
 }
