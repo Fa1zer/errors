@@ -34,6 +34,31 @@ class SaveViewController: UIViewController, Coordinatable {
         return container
     }()
     
+    private let fetchedResultController: NSFetchedResultsController<CoreDataPosts> = {
+
+        let request = NSFetchRequest<CoreDataPosts>(entityName: "CoreDataPosts")
+        let sort = NSSortDescriptor(key: "title", ascending: false)
+        let container = NSPersistentContainer(name: "PostModel")
+
+        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+
+            if let error = error {
+
+                fatalError("Unresolved error \(error)")
+            }
+        })
+
+        request.sortDescriptors = [sort]
+        request.fetchBatchSize = 20
+
+        let controller = NSFetchedResultsController(fetchRequest: request,
+                                                    managedObjectContext: container.viewContext,
+                                                    sectionNameKeyPath: nil,
+                                                    cacheName: nil)
+
+        return controller
+    }()
+    
     private let tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .plain)
         
@@ -55,6 +80,8 @@ class SaveViewController: UIViewController, Coordinatable {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(PostTableViewCell.self, forCellReuseIdentifier: cellId)
+        
+        fetchedResultController.delegate = self
         
         setupViews()
         
@@ -96,9 +123,13 @@ class SaveViewController: UIViewController, Coordinatable {
          
         context.perform { [ weak self ] in
             do {
+                
+                try self?.fetchedResultController.performFetch()
+                
                 self?.posts = try context.fetch(fetchRequest)
                 
                 self?.tableView.reloadData()
+                
             } catch {
                 print(error.localizedDescription)
             }
@@ -176,7 +207,7 @@ extension SaveViewController: UITableViewDelegate, UITableViewDataSource {
             guard let self = self else { return }
             
             let object = self.posts[indexPath.row] as NSManagedObject
-            let context = self.persistentContainer.newBackgroundContext()
+            let context = self.persistentContainer.viewContext
             let fetchRequest: NSFetchRequest<CoreDataPosts> = CoreDataPosts.fetchRequest()
                         
             context.perform {
@@ -205,9 +236,7 @@ extension SaveViewController: UITableViewDelegate, UITableViewDataSource {
         return "Сохранённые посты:"
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(posts.count)
-        
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {        
         return posts.count
     }
 
@@ -219,4 +248,59 @@ extension SaveViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
+}
+
+extension SaveViewController: NSFetchedResultsControllerDelegate {
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return fetchedResultController.sections?.count ?? 0
+    }
+
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.beginUpdates()
+    }
+
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+
+        switch type {
+        case .insert:
+
+            guard let newIndexPath = newIndexPath else {
+                return
+            }
+
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+
+        case .delete:
+
+            guard let indexPath = indexPath else {
+                return
+            }
+
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+
+        case .move:
+
+            guard let newIndexPath = newIndexPath, let indexPath = indexPath else {
+                return
+            }
+
+            tableView.moveRow(at: indexPath, to: newIndexPath)
+
+        case .update:
+
+            guard let indexPath = indexPath else {
+                return
+            }
+
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+
+        @unknown default:
+            fatalError()
+        }
+    }
+
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.endUpdates()
+    }
 }
