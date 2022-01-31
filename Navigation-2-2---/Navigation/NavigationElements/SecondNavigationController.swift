@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SecondNavigationController: UINavigationController, Coordinatable {
+final class SecondNavigationController: UINavigationController, Coordinatable {
     var tabBar: TabBarController?
     var callTabBar: (() -> Void)?    
 

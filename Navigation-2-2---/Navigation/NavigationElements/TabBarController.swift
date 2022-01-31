@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TabBarController: UITabBarController {
+final class TabBarController: UITabBarController {
     
     private let profileViewController = ProfileViewController()
     private let logInViewController = LogInViewController()
@@ -18,10 +18,26 @@ class TabBarController: UITabBarController {
     private let feedModule = FeedViewModel()
     private let firstNavigationController = FirstNavigationController()
     private let secondNavigationController = SecondNavigationController()
+    private let thirdNavigationController = ThirdNavigationController()
+    private let saveViewController = SaveViewController()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
+        configureViewControllers()
+
+        let controllers = [firstNavigationController,
+                           secondNavigationController,
+                           thirdNavigationController]
+                
+        self.viewControllers = controllers
+        
+        selectedIndex = 2
+        selectedIndex = 1
+        selectedIndex = 0
+    }
+    
+    private func configureViewControllers() {
         profileViewController.tabBar = self
         logInViewController.tabBar = self
         photosViewController.tabBar = self
@@ -30,12 +46,14 @@ class TabBarController: UITabBarController {
         feedModule.tabBar = self
         firstNavigationController.tabBar = self
         secondNavigationController.tabBar = self
+        thirdNavigationController.tabBar = self
+        saveViewController.tabBar = self
+    }
+    
+}
 
-        let controllers = [firstNavigationController, secondNavigationController]
-        
-        viewControllers = controllers
-        
-        selectedIndex = 1
-        selectedIndex = 0
+extension TabBarController: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        return true
     }
 }

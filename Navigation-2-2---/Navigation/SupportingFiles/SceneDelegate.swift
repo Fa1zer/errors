@@ -18,9 +18,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                window = UIWindow(frame: UIScreen.main.bounds)
         let tabBar = TabBarController()
         
-               self.window?.rootViewController = tabBar
-               window?.makeKeyAndVisible()
-               window?.windowScene = windowScene
+        self.window?.rootViewController = tabBar
+        self.window?.makeKeyAndVisible()
+        self.window?.windowScene = windowScene
             
         guard let _ = (scene as? UIWindowScene) else { return }
                 
@@ -28,7 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let loginNavigation = tabController.viewControllers?.last as? UINavigationController,
             let loginController = loginNavigation.viewControllers.first as? LogInViewController {
             
-            let myLogInFactory = MyLoginFactory()
+            let myLogInFactory = MyLogInFactory()
             
             loginController.delegate = myLogInFactory.createInspector()
         }
