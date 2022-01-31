@@ -327,7 +327,7 @@ final class LogInViewController: UIViewController, Coordinatable {
             print(error)
             
         }
-            
+        
     }
     
     private func notLogInCompletion() {

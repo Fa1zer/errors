@@ -15,7 +15,7 @@ final class SecondNavigationController: UINavigationController, Coordinatable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        viewControllers = [LogInViewController()]
+        viewControllers = [LogInViewController(), ProfileViewController()]
         
         tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.fill"),
                                   selectedImage: UIImage(systemName: "person.fill"))

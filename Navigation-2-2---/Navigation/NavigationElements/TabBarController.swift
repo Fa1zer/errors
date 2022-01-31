@@ -38,6 +38,7 @@ final class TabBarController: UITabBarController {
     }
     
     private func configureViewControllers() {
+      
         profileViewController.tabBar = self
         logInViewController.tabBar = self
         photosViewController.tabBar = self
@@ -48,12 +49,7 @@ final class TabBarController: UITabBarController {
         secondNavigationController.tabBar = self
         thirdNavigationController.tabBar = self
         saveViewController.tabBar = self
+
     }
     
-}
-
-extension TabBarController: UITabBarControllerDelegate {
-    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        return true
-    }
 }
