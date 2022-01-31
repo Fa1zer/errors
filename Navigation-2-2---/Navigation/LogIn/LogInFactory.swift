@@ -13,6 +13,6 @@ protocol LogInFactory {
     func createInspector() -> LogInInspector
 }
 
-final class MyLoginFactory: LogInFactory {
+final class MyLogInFactory: LogInFactory {
     func createInspector() -> LogInInspector { LogInInspector() }
 }

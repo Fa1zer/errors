@@ -14,18 +14,29 @@ final class LogInViewController: UIViewController, Coordinatable {
     
     override init(nibName: String?, bundle: Bundle?) {
         super.init(nibName: nibName, bundle: bundle)
+        
+        delegate = logInFactory.createInspector()
+        
+        let config = Realm.Configuration(encryptionKey: getKey())
+        
+        do {
+            
+            let realm = try Realm(configuration: config)
 
-        DispatchQueue.main.async { [weak self] in
-            guard let _ = self?.realm.objects(LogInModel.self) else { return }
+            for model in realm.objects(LogInModel.self) {
+
+                usersEmailOrPhone.text = model.email
+                usersPassword.text = model.password
+            }
+
+            try tapButton()
+            
+        } catch {
+
+            print(error)
+            
         }
-
-        for model in realm.objects(LogInModel.self) {
-
-            usersEmailOrPhone.text = model.email
-            usersPassword.text = model.password
-        }
-
-        try? tapButton()
+        
     }
 
     required init?(coder: NSCoder) {
@@ -36,7 +47,7 @@ final class LogInViewController: UIViewController, Coordinatable {
     weak var tabBar: TabBarController?
     var delegate: LogInViewControllerDelegate?
     
-    private let realm = try! Realm()
+    private let logInFactory = MyLogInFactory()
     private var bruteForceComplete = false
     private let bruteForce = BruteForce()
     private let color = UIColor(patternImage: UIImage(named: "blue_pixel")!)
@@ -301,11 +312,22 @@ final class LogInViewController: UIViewController, Coordinatable {
         logInModel.email = usersEmailOrPhone.text!
         logInModel.password = usersPassword.text!
         
-        realm.beginWrite()
+        let config = Realm.Configuration(encryptionKey: getKey())
+        
+        do {
+            
+            let realm = try Realm(configuration: config)
 
-        realm.add(logInModel)
+            realm.beginWrite()
+            realm.add(logInModel)
+            try realm.commitWrite()
+            
+        } catch {
 
-        try? realm.commitWrite()
+            print(error)
+            
+        }
+        
     }
     
     private func notLogInCompletion() {
@@ -397,13 +419,68 @@ final class LogInViewController: UIViewController, Coordinatable {
             
             self?.present(alertController, animated: true, completion: nil)
 
-            guard error == nil else { return }
+            let config = Realm.Configuration(encryptionKey: self?.getKey())
+            
+            do {
+                
+                let realm = try Realm(configuration: config)
 
-            self?.realm.beginWrite()
-
-            self?.realm.add(logInModel)
-
-            try? self?.realm.commitWrite()
+                                
+                realm.beginWrite()
+                realm.add(logInModel)
+                try realm.commitWrite()
+                
+            } catch {
+                
+                print(error.localizedDescription)
+                
+            }
         }
     }
+    
+}
+
+extension LogInViewController {
+    
+    private func getKey() -> Data {
+
+        let keychainIdentifier = "io.Realm.EncryptionExampleKey"
+        let keychainIdentifierData = keychainIdentifier.data(using: String.Encoding.utf8,
+                                                             allowLossyConversion: false)!
+        var query: [NSString: AnyObject] = [
+            kSecClass: kSecClassKey,
+            kSecAttrApplicationTag: keychainIdentifierData as AnyObject,
+            kSecAttrKeySizeInBits: 512 as AnyObject,
+            kSecReturnData: true as AnyObject
+        ]
+
+        var dataTypeRef: AnyObject?
+        var status = withUnsafeMutablePointer(to: &dataTypeRef) { SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0)) }
+        if status == errSecSuccess {
+
+            return dataTypeRef as! Data
+            
+        }
+        
+        var key = Data(count: 64)
+        
+        key.withUnsafeMutableBytes({ (pointer: UnsafeMutableRawBufferPointer) in
+            let result = SecRandomCopyBytes(kSecRandomDefault, 64, pointer.baseAddress!)
+            assert(result == 0, "Failed to get random bytes")
+        })
+
+        query = [
+            kSecClass: kSecClassKey,
+            kSecAttrApplicationTag: keychainIdentifierData as AnyObject,
+            kSecAttrKeySizeInBits: 512 as AnyObject,
+            kSecValueData: key as AnyObject
+        ]
+        
+        status = SecItemAdd(query as CFDictionary, nil)
+        
+        assert(status == errSecSuccess, "Failed to insert the new key in the keychain")
+        
+        return key
+    }
+
 }
