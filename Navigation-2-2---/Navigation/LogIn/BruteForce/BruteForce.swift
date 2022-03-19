@@ -8,7 +8,7 @@
 
 import Foundation
 
-class BruteForce {
+final class BruteForce {
     
     func indexOf(character: Character, _ array: [String]) -> Int {
         return array.firstIndex(of: String(character))!

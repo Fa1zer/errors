@@ -7,11 +7,18 @@
 //
 
 import UIKit
+import Firebase
+import CoreData
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        let appConfiguration = AppConfiguration.allCases.randomElement()
+        
+        NetworkService.dataTaskFromURL(URL: URL(string: appConfiguration!.rawValue)!)
+        
+        FirebaseApp.configure()
         
         return true
     }
