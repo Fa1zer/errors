@@ -29,7 +29,7 @@ final class InfoViewController: UIViewController, Coordinatable {
     private var jsonFirstModel: InfoJsonModel? {
         didSet {
             DispatchQueue.main.async { [weak self] in
-                self?.titleLabel.text = "1. \(self?.jsonFirstModel?.title ?? "Данные пока не полученны")"
+                self?.titleLabel.text = "1. \(self?.jsonFirstModel?.title ?? NSLocalizedString("Data not yet available", comment: ""))"
             }
         }
     }
@@ -37,7 +37,7 @@ final class InfoViewController: UIViewController, Coordinatable {
     private var jsonPlanetModel: InfoPlanetModel? {
         didSet {
             DispatchQueue.main.async { [weak self] in
-                self?.orbitalPeriodLabel.text = "2. orbital period = \(self?.jsonPlanetModel?.orbitalPeriod ?? "nil")"
+                self?.orbitalPeriodLabel.text = "2. \(NSLocalizedString("orbital period", comment: "")) = \(self?.jsonPlanetModel?.orbitalPeriod ?? "nil")"
                 
                 self?.callPlanetResidents()
             }
@@ -66,7 +66,7 @@ final class InfoViewController: UIViewController, Coordinatable {
     }()
 
     private lazy var button: CustomButton = { [weak self] in
-        let button = CustomButton(title: "Tap me",
+        let button = CustomButton(title: NSLocalizedString("Tap me", comment: ""),
                                   color: .clear,
                                   target: self!.showAlert)
         
@@ -79,7 +79,7 @@ final class InfoViewController: UIViewController, Coordinatable {
        let label = UILabel()
         
         label.textColor = .white
-        label.text = "1. Данные пока не полученны"
+        label.text = "1. \(NSLocalizedString("Data not yet available", comment: ""))"
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -89,7 +89,7 @@ final class InfoViewController: UIViewController, Coordinatable {
        let label = UILabel()
         
         label.textColor = .white
-        label.text = "2. Данные пока не полученны"
+        label.text = "2. \(NSLocalizedString("Data not yet available", comment: ""))"
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -206,16 +206,16 @@ final class InfoViewController: UIViewController, Coordinatable {
     }
     
     @objc private func showAlert() {
-        let alertController = UIAlertController(title: "Удалить пост?",
-                                    message: "Пост нельзя будет восстановить",
+        let alertController = UIAlertController(title: NSLocalizedString("Remove post?", comment: ""),
+                                    message: nil,
                                     preferredStyle: .alert)
         
-        let cancelAction = UIAlertAction(title: "Отмена", style: .default) { _ in
+        let cancelAction = UIAlertAction(title: NSLocalizedString("No", comment: ""), style: .default) { _ in
             
             print("Отмена")
         }
         
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
+        let deleteAction = UIAlertAction(title: NSLocalizedString("Yes", comment: ""), style: .destructive) { _ in
             
             print("Удалить")
         }
@@ -246,6 +246,6 @@ extension InfoViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Tatooine residents:"
+        return NSLocalizedString("Tatooine residents", comment: "")
     }
 }

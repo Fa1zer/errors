@@ -29,7 +29,7 @@ final class ProfileViewController: UIViewController, Coordinatable {
     }
     
     private lazy var signOutButton: CustomButton = {
-        let button = CustomButton(title: "Sign Out", color: .systemBlue,
+        let button = CustomButton(title: NSLocalizedString("Sign Out", comment: ""), color: .systemBlue,
                                   target: { [weak self] in self?.signOutButtonTaped() })
         
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -156,9 +156,10 @@ final class ProfileViewController: UIViewController, Coordinatable {
             self.date!.minute = 1
             self.date!.second = 30
             
-            self.footerView.timerLabel.text = "До обновления осталось: \(self.date!.minute!) минут \(self.date!.second!) секунд."
+            self.footerView.timerLabel.text = "\(NSLocalizedString("Until the update", comment: "")) \(String.localizedStringWithFormat(NSLocalizedString("minutes", comment: ""), UInt(self.date?.minute ?? 0))) \(String.localizedStringWithFormat(NSLocalizedString("seconds", comment: ""), UInt(self.date?.second ?? 0)))."
             
-            let alertController = UIAlertController(title: "Страница была обновлена",
+            let alertController = UIAlertController(title: NSLocalizedString("Page has been updated",
+                                                                             comment: ""),
                                         message: nil,
                                         preferredStyle: .alert)
             
@@ -173,7 +174,7 @@ final class ProfileViewController: UIViewController, Coordinatable {
         let secondTimer = Timer(timeInterval: 1, repeats: true) { [self] timer in
             self.date!.second! -= 1
             
-            self.footerView.timerLabel.text = "До обновления осталось: \(date!.minute!) минут \(date!.second!) секунд."
+            self.footerView.timerLabel.text = "\(NSLocalizedString("Until the update", comment: "")) \(String.localizedStringWithFormat(NSLocalizedString("minutes", comment: ""), UInt(self.date?.minute ?? 0))) \(String.localizedStringWithFormat(NSLocalizedString("seconds", comment: ""), UInt(self.date?.second ?? 0)))."
         }
         
         RunLoop.main.add(firstTimer, forMode: .common)
@@ -187,7 +188,7 @@ final class ProfileViewController: UIViewController, Coordinatable {
                 
                 navigationController?.popViewController(animated: true)
                 
-                let alertController = UIAlertController(title: "Вы вышли из аккаунта", message: nil,
+                let alertController = UIAlertController(title: NSLocalizedString("You are out of the account", comment: ""), message: nil,
                                                         preferredStyle: .alert)
                 
                 let cancelAction = UIAlertAction(title: "ОК", style: .default)
@@ -197,8 +198,9 @@ final class ProfileViewController: UIViewController, Coordinatable {
                 present(alertController, animated: true, completion: nil)
                 
             } catch {
-                let alertController = UIAlertController(title: "Произошла ошибка.",
-                                            message: "Не получилось выйти из аккаунта.",
+                let alertController = UIAlertController(title: NSLocalizedString("error",
+                                                                                 comment: ""),
+                                            message: NSLocalizedString("Could not get out of the account", comment: ""),
                                             preferredStyle: .alert)
                 
                 let cancelAction = UIAlertAction(title: "ОК", style: .default)
@@ -323,8 +325,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        footerView.timerLabel.text = "До обновления осталось: \(date!.minute!) минут \(date!.second!) секунд."
-        
+        self.footerView.timerLabel.text = "\(NSLocalizedString("Until the update", comment: "")) \(String.localizedStringWithFormat(NSLocalizedString("minutes", comment: ""), UInt(self.date?.minute ?? 0))) \(String.localizedStringWithFormat(NSLocalizedString("seconds", comment: ""), UInt(self.date?.second ?? 0)))."
         return footerView
     }
     

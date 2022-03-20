@@ -19,9 +19,10 @@ final class FourthNavigationController: UINavigationController, Coordinatable {
         
         self.viewControllers = [GeolocationViewController()]
         
-        self.tabBarItem = UITabBarItem(title: "Save", image: UIImage(systemName: "globe"),
-                                  selectedImage: UIImage(systemName: "globe"))
-        self.title = "Save"
+        self.tabBarItem = UITabBarItem(title: NSLocalizedString("Geocoder", comment: ""),
+                                       image: UIImage(systemName: "globe"),
+                                       selectedImage: UIImage(systemName: "globe"))
+        self.title = NSLocalizedString("Geocoder", comment: "")
     }
     
 }

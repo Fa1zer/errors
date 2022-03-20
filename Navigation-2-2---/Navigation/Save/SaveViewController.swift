@@ -95,12 +95,13 @@ class SaveViewController: UIViewController, Coordinatable {
     
     private func setupViews() {
         self.view.backgroundColor = .white
-        self.navigationItem.title = "Save"
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Применить фильтер",
+        self.navigationItem.title = NSLocalizedString("Save", comment: "")
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Use filter",
+                                                                                          comment: ""),
                                                                 style: .plain,
                                                                 target: self,
                                                                 action: #selector(rightBarButtonTapped))
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Сбросить фильтер",
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Remove filter", comment: ""),
                                                                 style: .plain,
                                                                 target: self,
                                                                 action: #selector(leftBarButtonAction))
@@ -138,25 +139,27 @@ class SaveViewController: UIViewController, Coordinatable {
     
     @objc private func rightBarButtonTapped() {
         
-        let alertController = UIAlertController(title: "Фильтер по автору поста",
-                                    message: "Введите имя автора",
+        let alertController = UIAlertController(title: NSLocalizedString("Autor filter", comment: ""),
+                                    message: NSLocalizedString("Complete autor label", comment: ""),
                                     preferredStyle: .alert)
         
         alertController.addTextField { textField in
             textField.backgroundColor = .white
             textField.textColor = .black
             textField.tintColor = #colorLiteral(red: 0.3675304651, green: 0.5806378722, blue: 0.7843242884, alpha: 1)
-            textField.placeholder = "Имя автора"
+            textField.placeholder = NSLocalizedString("Autor name", comment: "")
             textField.layer.borderColor = UIColor.black.cgColor
         }
 
-        let firstAlertAction = UIAlertAction(title: "Добавить фильтер", style: .cancel) { [weak self] _ in
+        let firstAlertAction = UIAlertAction(title: NSLocalizedString("Add filter", comment: ""),
+                                             style: .cancel) { [weak self] _ in
             
             self?.postsFilter(autor: (alertController.textFields?.first?.text)!)
             self?.tableView.reloadData()
         }
         
-        let secondAlertAction = UIAlertAction(title: "Нет", style: .default)
+        let secondAlertAction = UIAlertAction(title: NSLocalizedString("No", comment: ""),
+                                              style: .default)
         
         alertController.addAction(firstAlertAction)
         alertController.addAction(secondAlertAction)
@@ -166,16 +169,17 @@ class SaveViewController: UIViewController, Coordinatable {
     
     @objc private func leftBarButtonAction() {
         
-        let alertController = UIAlertController(title: "Удалить фильтр?",
+        let alertController = UIAlertController(title: "\(NSLocalizedString("Remove filter", comment: ""))?",
                                     message: nil,
                                     preferredStyle: .alert)
 
-        let firstAlertAction = UIAlertAction(title: "да", style: .cancel) { [weak self] _ in
+        let firstAlertAction = UIAlertAction(title: NSLocalizedString("Yes", comment: ""),
+                                             style: .cancel) { [weak self] _ in
             
             self?.save()
         }
         
-        let secondAlertAction = UIAlertAction(title: "Нет", style: .default)
+        let secondAlertAction = UIAlertAction(title: NSLocalizedString("No", comment: ""), style: .default)
         
         alertController.addAction(firstAlertAction)
         alertController.addAction(secondAlertAction)
@@ -202,7 +206,7 @@ extension SaveViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        let contextualAction = UIContextualAction(style: .normal, title: "Удалить") { [ weak self ] _, _, _ in
+        let contextualAction = UIContextualAction(style: .normal, title: NSLocalizedString("Remove", comment: "")) { [ weak self ] _, _, _ in
             
             guard let self = self else { return }
             
@@ -233,7 +237,7 @@ extension SaveViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Сохранённые посты:"
+        return NSLocalizedString("Saved posts", comment: "")
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {        

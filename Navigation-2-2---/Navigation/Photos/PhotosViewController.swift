@@ -28,7 +28,7 @@ final class PhotosViewController: UIViewController, Coordinatable {
         
         navigationController?.setNavigationBarHidden(false, animated: true)
         
-        navigationItem.title = "Photo Gallery"
+        navigationItem.title = NSLocalizedString("Photo Gallery", comment: "")
         
         
         
@@ -62,7 +62,8 @@ final class PhotosViewController: UIViewController, Coordinatable {
                     }
                     
                 default:
-                    let alertController = UIAlertController(title: "Not Found",
+                    let alertController = UIAlertController(title: NSLocalizedString("Not Found",
+                                                                                     comment: ""),
                                                 message: nil,
                                                 preferredStyle: .alert)
 

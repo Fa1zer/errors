@@ -53,15 +53,15 @@ final class LogInViewController: UIViewController, Coordinatable {
     private let color = UIColor(patternImage: UIImage(named: "blue_pixel")!)
 
     private lazy var logInButton: CustomButton = {
-       let button = CustomButton(title: "Log In",
+       let button = CustomButton(title: NSLocalizedString("Log In", comment: ""),
                                  color: color,
                                  target: { [weak self] in
            do {
                try self?.tapButton()
            } catch {
                
-               let alertController = UIAlertController(title: "Поля пароля или логина пустые",
-                                           message: "Заполните их",
+               let alertController = UIAlertController(title: NSLocalizedString("Password or email strings is empty", comment: ""),
+                                           message: NSLocalizedString("Complete it", comment: ""),
                                            preferredStyle: .alert)
 
                let cancelAction = UIAlertAction(title: "ОК", style: .default)
@@ -112,7 +112,7 @@ final class LogInViewController: UIViewController, Coordinatable {
         emailOrPhone.font = UIFont.systemFont(ofSize: 16)
         emailOrPhone.autocapitalizationType = .none
         emailOrPhone.backgroundColor = .systemGray6
-        emailOrPhone.placeholder = "Email or phone"
+        emailOrPhone.placeholder = NSLocalizedString("Email or phone", comment: "")
         emailOrPhone.layer.cornerRadius = 10
         emailOrPhone.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         emailOrPhone.layer.borderColor = UIColor.lightGray.cgColor
@@ -135,7 +135,7 @@ final class LogInViewController: UIViewController, Coordinatable {
         password.autocapitalizationType = .none
         password.backgroundColor = .systemGray6
         password.isSecureTextEntry = true
-        password.placeholder = "Password"
+        password.placeholder = NSLocalizedString("Password", comment: "")
         password.layer.cornerRadius = 10
         password.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         password.layer.borderColor = UIColor.lightGray.cgColor
@@ -150,7 +150,8 @@ final class LogInViewController: UIViewController, Coordinatable {
     }()
     
     private lazy var bruteForceButton: CustomButton = {
-        let button = CustomButton(title: "Brute Force on", color: .systemGreen) { [weak self] in
+        let button = CustomButton(title: NSLocalizedString("Brute Force on", comment: ""),
+                                  color: .systemGreen) { [weak self] in
             self?.startBruteForce()
         }
         
@@ -332,16 +333,19 @@ final class LogInViewController: UIViewController, Coordinatable {
     
     private func notLogInCompletion() {
         
-        let alertController = UIAlertController(title: "Пользователь не зарегистрирован.",
-                                    message: "Зарегистрировать пользователя?",
+        let alertController = UIAlertController(title: NSLocalizedString("User is not registered",
+                                                                         comment: ""),
+                                    message: NSLocalizedString("Register a user?", comment: ""),
                                     preferredStyle: .alert)
 
-        let cancelActionFirst = UIAlertAction(title: "Да", style: .default) { [weak self] action in
+        let cancelActionFirst = UIAlertAction(title: NSLocalizedString("Yes", comment: ""),
+                                              style: .default) { [weak self] action in
             self?.addUsser(emailOrPhone: (self?.usersEmailOrPhone.text)!,
                            password: (self?.usersPassword.text)!)
         }
         
-        let cancelActionSecond = UIAlertAction(title: "Нет", style: .cancel)
+        let cancelActionSecond = UIAlertAction(title: NSLocalizedString("No", comment: ""),
+                                               style: .cancel)
 
         alertController.addAction(cancelActionFirst)
         alertController.addAction(cancelActionSecond)
@@ -390,7 +394,7 @@ final class LogInViewController: UIViewController, Coordinatable {
         FirebaseAuth.Auth.auth().createUser(withEmail: emailOrPhone, password: password) { [weak self]
             result, error in
             
-            var status = "Пользователь зарегестрирован"
+            var status = NSLocalizedString("User is registered", comment: "")
             var message: String? = nil
             let logInModel = LogInModel()
             
@@ -398,13 +402,14 @@ final class LogInViewController: UIViewController, Coordinatable {
             logInModel.password = password
             
             if let _ = error {
-                status = "Произошла ошбка"
-                message = "Повторите попытку позже"
+                status = NSLocalizedString("error", comment: "")
+                message = nil
             }
             
             if password.count < 6 {
-                status = "Слишком короткий пароль"
-                message = "Длина пароля должен быть более 5 символов"
+                status = NSLocalizedString("The password is too short.", comment: "")
+                message = NSLocalizedString("The password must be more than 5 characters long",
+                                            comment: "")
             }
             
             let alertController = UIAlertController(title: status,

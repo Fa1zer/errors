@@ -38,12 +38,13 @@ class GeolocationViewController: UIViewController {
     
     private func setupViews() {
         
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Удалить метки",
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Remove pins",
+                                                                                         comment: ""),
                                                                 style: .done,
                                                                 target: self,
                                                                 action: #selector(self.deleteAllPins))
         self.view.backgroundColor = .white
-        self.title = "Geocoder"
+        self.title = NSLocalizedString("Geocoder", comment: "")
         
         self.view.addSubview(mapView)
         
@@ -132,16 +133,19 @@ extension GeolocationViewController: MKMapViewDelegate {
             
         }
         
-        let alertController = UIAlertController(title: "Что сделать с меткой?", message: nil,
+        let alertController = UIAlertController(title: NSLocalizedString("What to do with the tag?",
+                                                                         comment: ""), message: nil,
                                                 preferredStyle: .alert)
         
-        let firstAlertAction = UIAlertAction(title: "Назад", style: .default) { _ in
+        let firstAlertAction = UIAlertAction(title: NSLocalizedString("Back", comment: ""),
+                                             style: .default) { _ in
             
             mapView.deselectAnnotation(view.annotation, animated: true)
             
         }
         
-        let secondAlertAction = UIAlertAction(title: "Удалить", style: .default) { [ weak self ] _ in
+        let secondAlertAction = UIAlertAction(title: NSLocalizedString("Remove", comment: ""),
+                                              style: .default) { [ weak self ] _ in
             
             mapView.deselectAnnotation(view.annotation, animated: true)
             
@@ -152,7 +156,8 @@ extension GeolocationViewController: MKMapViewDelegate {
                         
         }
         
-        let thirdAlertAction = UIAlertAction(title: "Проложить маршрут", style: .cancel) { [ weak self ] _ in
+        let thirdAlertAction = UIAlertAction(title: NSLocalizedString("Plan a route", comment: ""),
+                                             style: .cancel) { [ weak self ] _ in
             
             mapView.deselectAnnotation(view.annotation, animated: true)
             

@@ -17,9 +17,10 @@ class ThirdNavigationController: UINavigationController, Coordinatable {
         super.viewDidLoad()
         
         self.viewControllers = [SaveViewController()]
-        self.tabBarItem = UITabBarItem(title: "Save", image: UIImage(systemName: "doc.on.doc.fill"),
-                                  selectedImage: UIImage(systemName: "doc.on.doc.fill"))
-        self.title = "Save"
+        self.tabBarItem = UITabBarItem(title: NSLocalizedString("Save", comment: ""),
+                                       image: UIImage(systemName: "doc.on.doc.fill"),
+                                       selectedImage: UIImage(systemName: "doc.on.doc.fill"))
+        self.title = NSLocalizedString("Save", comment: "")
     }
     
 }

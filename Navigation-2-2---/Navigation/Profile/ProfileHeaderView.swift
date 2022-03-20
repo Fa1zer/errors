@@ -38,7 +38,7 @@ final class ProfileHeaderView: UIView {
     }()
 
     private lazy var setStatusButton: CustomButton = {
-        let button = CustomButton(title: "Show status",
+        let button = CustomButton(title: NSLocalizedString("Show status", comment: ""),
                                   color: .systemBlue,
                                   target: { [weak self] in self?.buttonPressed() })
         
@@ -56,7 +56,7 @@ final class ProfileHeaderView: UIView {
     private let statusLabel: UILabel = {
         let status = UILabel()
 
-        status.text = "status"
+        status.text = "Your status"
         status.textColor = .gray
         status.textAlignment = .center
         status.font = UIFont.systemFont(ofSize: 14,

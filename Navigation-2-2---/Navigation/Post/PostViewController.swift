@@ -18,12 +18,12 @@ final class PostViewController: UIViewController, Coordinatable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemRed
+        self.view.backgroundColor = .systemRed
         
-        title = post?.title
+        self.title = post?.title
         
-        navigationItem.title = "Post"
+        self.navigationItem.title = NSLocalizedString("Post", comment: "")
         
-        present(InfoViewController(), animated: true)
+        self.present(InfoViewController(), animated: true)
     }
 }

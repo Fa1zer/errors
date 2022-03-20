@@ -26,8 +26,8 @@ final class PostTableViewCell: UITableViewCell {
     var post: ProfilePost? {
         didSet {
             autorLabel.text = post!.autor
-            likeLabel.text = "likes: \(post!.likes)"
-            viewsLabel.text = "views: \(post!.views)"
+            likeLabel.text = "\(NSLocalizedString("likes", comment: "")) \(post!.likes)"
+            viewsLabel.text = "\(NSLocalizedString("views", comment: "")) \(post!.views)"
             descriptionPost.text = post!.description
             
             imageProcessor.processImage(sourceImage: UIImage(named: post!.image)!,
