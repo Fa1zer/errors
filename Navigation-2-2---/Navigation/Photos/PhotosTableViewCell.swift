@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PhotosTableViewCell: UITableViewCell {
+final class PhotosTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -44,7 +44,7 @@ class PhotosTableViewCell: UITableViewCell {
     private let photosLabel: UILabel = {
        let label = UILabel()
         
-        label.text = "Photos"
+        label.text = NSLocalizedString("Photos", comment: "")
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false

@@ -1,0 +1,58 @@
+/* 
+  Localizable.strings
+  Navigation
+
+  Created by Artemiy Zuzin on 19.03.2022.
+  Copyright © 2022 Artem Novichkov. All rights reserved.
+*/
+
+"Feed" = "Feed";
+"Push Post" = "Push Post";
+"Check word" = "Check word";
+"Button tapped" = "Button tapped";
+"Tap me" = "Tap me";
+"Tatooine residents" = "Tatooine residents";
+"Post" = "Post";
+"Profile" = "Profile";
+"Email or phone" = "Email or phone";
+"Password" = "Password";
+"Log In" = "Log In";
+"Brute Force on" = "Brute Force on";
+"Password or email strings is empty" = "Password or email strings is empty";
+"Complete it" = "Complete it";
+"User is not registered" = "User is not registered";
+"Register a user?" = "Register a user?";
+"User is registered" = "User is registered";
+"Yes" = "Yes";
+"No" = "No";
+"Sign Out" = "Sign Out";
+"Show status" = "Show status";
+"Photos" = "Photos";
+"likes" = "likes: ";
+"views" = "views: ";
+"Until the update" = "Until the update: ";
+"Photo Gallery" = "Photo Gallery";
+"Save" = "Save";
+"Saved posts" = "Saved posts:";
+"Remove filter" = "Remove filter";
+"Use filter" = "Use filter";
+"Geocoder" = "Geocoder";
+"What to do with the tag?" = "What to do with the tag?";
+"Back" = "Back";
+"Plan a route" = "Plan a route";
+"Data not yet available" = "Data not yet available";
+"orbital period" = "orbital period";
+"Remove post?" = "Remove post?";
+"error" = "Error";
+"The password is too short" = "The password is too short";
+"The password must be more than 5 characters long" = "The password must be more than 5 characters long";
+"Page has been updated" = "Page has been updated";
+"You are out of the account" = "You are out of the account";
+"Could not get out of the account" = "Couldn't get out of the account";
+"Not Found" = "Not Found";
+"Autor filter" = "Autor filter";
+"Complete autor label" = "Complete autor label";
+"Autor name" = "Autor name";
+"Add filter" = "Add filter";
+"Remove" = "Remove";
+"Remove pins" = "Remove pins";
