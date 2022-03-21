@@ -8,7 +8,7 @@
 
 import UIKit
 
-class FirstNavigationController: UINavigationController, Coordinatable {
+final class FirstNavigationController: UINavigationController, Coordinatable {
     var tabBar: TabBarController?
     var callTabBar: (() -> Void)?    
     
@@ -17,11 +17,12 @@ class FirstNavigationController: UINavigationController, Coordinatable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        createModuleFactory.createModule(navigatinController: self)
+        self.createModuleFactory.createModule(navigatinController: self)
         
-        tabBarItem = UITabBarItem(title: "Feed", image: UIImage(systemName: "house.fill"),
+        self.tabBarItem = UITabBarItem(title: NSLocalizedString("Feed", comment: ""),
+                                  image: UIImage(systemName: "house.fill"),
                                   selectedImage: UIImage(systemName: "house.fill"))
         
-        title = "Feed"
+        self.title = NSLocalizedString("Feed", comment: "")
     }
 }

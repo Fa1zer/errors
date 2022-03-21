@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SecondNavigationController: UINavigationController, Coordinatable {
+final class SecondNavigationController: UINavigationController, Coordinatable {
     var tabBar: TabBarController?
     var callTabBar: (() -> Void)?    
 
@@ -17,9 +17,10 @@ class SecondNavigationController: UINavigationController, Coordinatable {
         
         viewControllers = [LogInViewController()]
         
-        tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.fill"),
+        tabBarItem = UITabBarItem(title: NSLocalizedString("Profile", comment: ""),
+                                  image: UIImage(systemName: "person.fill"),
                                   selectedImage: UIImage(systemName: "person.fill"))
         
-        title = "Profile"
+        title = NSLocalizedString("Profile", comment: "")
     }
 }

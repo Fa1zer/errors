@@ -9,12 +9,12 @@
 import UIKit
 import SnapKit
 
-class ProfileTimerFooterView: UIView {
+final class ProfileTimerFooterView: UIView {
 
     let timerLabel: UILabel = {
        let label = UILabel()
         
-        label.tintColor = .systemGray6
+        label.tintColor = .secondaryTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -23,7 +23,7 @@ class ProfileTimerFooterView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        backgroundColor = .white
+        backgroundColor = .backgroundColor
         alpha = 0.8
         
         setupViews()

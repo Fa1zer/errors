@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import FirebaseAuth
 
-class ProfileViewController: UIViewController, Coordinatable {
+final class ProfileViewController: UIViewController, Coordinatable {
     
     weak var tabBar: TabBarController?
     var callTabBar: (() -> Void)?
@@ -27,9 +28,19 @@ class ProfileViewController: UIViewController, Coordinatable {
         }
     }
     
+    private lazy var signOutButton: CustomButton = {
+        let button = CustomButton(title: NSLocalizedString("Sign Out", comment: ""), color: .systemBlue,
+                                  target: { [weak self] in self?.signOutButtonTaped() })
+        
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         
+        tableView.backgroundColor = .backgroundColor
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         return tableView
@@ -62,23 +73,28 @@ class ProfileViewController: UIViewController, Coordinatable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemGray6
+        view.backgroundColor = .backgroundColor
         
         setupViews()
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        
-        navigationController?.setNavigationBarHidden(true, animated: true)
-                
+                        
         if translucentView.isHidden == false {
             
             tapExit()
         }
+        
     }
     
     private func setupViews() {
+        
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        self.navigationItem.setHidesBackButton(true, animated: false)
+        self.title = NSLocalizedString("Profile", comment: "")
+        
+        view.addSubview(signOutButton)
         view.addSubview(tableView)
         view.addSubview(exit)
         
@@ -92,7 +108,13 @@ class ProfileViewController: UIViewController, Coordinatable {
         tableView.delegate = self
         tableView.register(PostTableViewCell.self, forCellReuseIdentifier: cellid)
         
-        let constraints = [tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+        let constraints = [signOutButton.topAnchor.constraint(equalTo:
+                                                                view.safeAreaLayoutGuide.topAnchor),
+                           signOutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                           signOutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                           signOutButton.heightAnchor.constraint(equalToConstant: 50),
+                           
+                           tableView.topAnchor.constraint(equalTo: signOutButton.bottomAnchor),
                            tableView.bottomAnchor.constraint(equalTo:
                                                                 view.safeAreaLayoutGuide.bottomAnchor),
                            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -124,20 +146,25 @@ class ProfileViewController: UIViewController, Coordinatable {
         
         exit.addGestureRecognizer(tapExitGesture)
         
-        var dateComponents  = DateComponents()
+        var dateComponents = DateComponents()
         
         dateComponents.minute = 1
         dateComponents.second = 30
         
         self.date = dateComponents
-        
+
         let firstTimer = Timer(timeInterval: 90, repeats: true) { timer in
+            let internetConnection = Bool.random()
+            
+            guard internetConnection else { preconditionFailure() }
+            
             self.date!.minute = 1
             self.date!.second = 30
             
-            self.footerView.timerLabel.text = "До обновления осталось: \(self.date!.minute!) минутself. \(self.date!.second!) секунд."
+            self.footerView.timerLabel.text = "\(NSLocalizedString("Until the update", comment: "")) \(String.localizedStringWithFormat(NSLocalizedString("minutes", comment: ""), UInt(self.date?.minute ?? 0))) \(String.localizedStringWithFormat(NSLocalizedString("seconds", comment: ""), UInt(self.date?.second ?? 0)))."
             
-            let alertController = UIAlertController(title: "Страница была обновлена",
+            let alertController = UIAlertController(title: NSLocalizedString("Page has been updated",
+                                                                             comment: ""),
                                         message: nil,
                                         preferredStyle: .alert)
             
@@ -152,14 +179,45 @@ class ProfileViewController: UIViewController, Coordinatable {
         let secondTimer = Timer(timeInterval: 1, repeats: true) { [self] timer in
             self.date!.second! -= 1
             
-            self.footerView.timerLabel.text = "До обновления осталось: \(date!.minute!) минут \(date!.second!) секунд."
+            self.footerView.timerLabel.text = "\(NSLocalizedString("Until the update", comment: "")) \(String.localizedStringWithFormat(NSLocalizedString("minutes", comment: ""), UInt(self.date?.minute ?? 0))) \(String.localizedStringWithFormat(NSLocalizedString("seconds", comment: ""), UInt(self.date?.second ?? 0)))."
         }
         
         RunLoop.main.add(firstTimer, forMode: .common)
         RunLoop.main.add(secondTimer, forMode: .common)
     }
     
-    @objc func tapImage() {
+    private func signOutButtonTaped() {
+        if FirebaseAuth.Auth.auth().currentUser != nil {
+            do {
+                try FirebaseAuth.Auth.auth().signOut()
+                
+                navigationController?.popViewController(animated: true)
+                
+                let alertController = UIAlertController(title: NSLocalizedString("You are out of the account", comment: ""), message: nil,
+                                                        preferredStyle: .alert)
+                
+                let cancelAction = UIAlertAction(title: "ОК", style: .default)
+
+                alertController.addAction(cancelAction)
+
+                present(alertController, animated: true, completion: nil)
+                
+            } catch {
+                let alertController = UIAlertController(title: NSLocalizedString("error",
+                                                                                 comment: ""),
+                                            message: NSLocalizedString("Could not get out of the account", comment: ""),
+                                            preferredStyle: .alert)
+                
+                let cancelAction = UIAlertAction(title: "ОК", style: .default)
+
+                alertController.addAction(cancelAction)
+
+                present(alertController, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    @objc private func tapImage() {
             
         translucentView.isHidden = false
         
@@ -185,7 +243,7 @@ class ProfileViewController: UIViewController, Coordinatable {
         UIView.animate(withDuration: 0.3, delay: 0.5, animations: { self.exit.alpha = 1 })
     }
     
-    @objc func tapExit() {
+    @objc private func tapExit() {
         tableView.isScrollEnabled = true
         
         UIView.animate(withDuration: 0.5, animations: { [self] in
@@ -209,20 +267,25 @@ class ProfileViewController: UIViewController, Coordinatable {
             exit.isHidden = true
         }
     }
+    
 }
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) ->
-    CGFloat{ 220 }
+    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat{
+        return 220
+    }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
-    { UITableView.automaticDimension }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
-    { headerView }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return headerView
+    }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
-    { posts.count + 1 }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return posts.count + 1
+    }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard indexPath.row != 0 else {
@@ -267,8 +330,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        footerView.timerLabel.text = "До обновления осталось: \(date!.minute!) минут \(date!.second!) секунд."
-        
+        self.footerView.timerLabel.text = "\(NSLocalizedString("Until the update", comment: "")) \(String.localizedStringWithFormat(NSLocalizedString("minutes", comment: ""), UInt(self.date?.minute ?? 0))) \(String.localizedStringWithFormat(NSLocalizedString("seconds", comment: ""), UInt(self.date?.second ?? 0)))."
         return footerView
     }
     

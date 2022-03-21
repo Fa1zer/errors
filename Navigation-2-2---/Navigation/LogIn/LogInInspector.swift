@@ -7,14 +7,30 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 protocol LogInViewControllerDelegate {
-    
-    func inspect(emailOrPhone: String, password: String) -> Bool
+    func inspect(emailOrPhone: String,
+                 password: String,
+                 logInCompletion: @escaping () -> Void,
+                 notLogInCompletion: @escaping () -> Void)
 }
 
-class LogInInspector: LogInViewControllerDelegate {
-    func inspect(emailOrPhone: String, password: String) -> Bool {
-        return Checker.checker.check(emailOrPhone: emailOrPhone, password: password)
+final class LogInInspector: LogInViewControllerDelegate {
+    
+    func inspect(emailOrPhone: String, password: String, logInCompletion: @escaping () -> Void,
+                 notLogInCompletion: @escaping () -> Void) {
+        
+        FirebaseAuth.Auth.auth().signIn(withEmail: emailOrPhone, password: password) { result, error in
+            
+            if let _ = error {
+               
+                notLogInCompletion()
+            
+            } else {
+                
+                logInCompletion()
+            }
+        }
     }
 }

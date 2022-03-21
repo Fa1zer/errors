@@ -1,0 +1,58 @@
+/* 
+  Localizable.strings
+  Navigation
+
+  Created by Artemiy Zuzin on 19.03.2022.
+  Copyright © 2022 Artem Novichkov. All rights reserved.
+*/
+
+"Feed" = "Лента";
+"Push Post" = "Перейти на пост";
+"Check word" = "Проверить пост";
+"Button tapped" = "Кнопка была нажата";
+"Tap me" = "Нажми меня";
+"Tatooine residents" = "Жители татуина:";
+"Post" = "Пост";
+"Profile" = "Профиль";
+"Email or phone" = "Email или телефон";
+"Password" = "Пароль";
+"Log In" = "Войти";
+"Brute Force on" = "Включить Brute Force";
+"Password or email strings is empty" = "Поля пароля или логина пустые";
+"Complete it" = "Заполните их";
+"User is not registered" = "Пользователь не зарегестрирован";
+"Register a user?" = "Зарегестрировать пользователя?";
+"User is registered" = "Пользователь зарегестрирован";
+"Yes" = "Да";
+"No" = "Нет";
+"Sign Out" = "Выйти";
+"Show status" = "Поменять статус";
+"Photos" = "Фотографии";
+"likes" = "лайки: ";
+"views" = "просмотры: ";
+"Until the update" = "До обновления осталось: ";
+"Photo Gallery" = "Фото галерея";
+"Save" = "Сохранённые";
+"Saved posts" = "Сохранённые посты:";
+"Remove filter" = "Удалить фильтр";
+"Use filter" = "Использовать фильтр";
+"Geocoder" = "Геолокация";
+"What to do with the tag?" = "Что сделать с меткой?";
+"Back" = "Назад";
+"Plan a route" = "Проложить маршрут";
+"Data not yet available" = "Данные пока не получены";
+"orbital period" = "орбитальный период";
+"Remove post?" = "Удалить пост?";
+"error" = "Произошла ошибка";
+"The password is too short" = "Пароль слишком короткий";
+"The password must be more than 5 characters long" = "Длина пароля должен быть более 5 символов";
+"Page has been updated" = "Страница была обновлена";
+"You are out of the account" = "Вы вышли из аккаунта";
+"Could not get out of the account" = "Не удалось выйти из аккаунта";
+"Not Found" = "Не найдено";
+"Autor filter" = "Фильтер по автору поста";
+"Complete autor label" = "Введите имя автора";
+"Autor name" = "Имя автора";
+"Add filter" = "Добавить фильтер";
+"Remove" = "Удалить";
+"Remove pins" = "Удалить метки";

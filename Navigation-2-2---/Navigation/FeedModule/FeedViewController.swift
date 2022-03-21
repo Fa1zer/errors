@@ -27,7 +27,7 @@ final class FeedViewController: UIViewController {
     
     private var viewModel: FeedOutput & FeedInput & Coordinatable
 
-    let post: Post = Post(title: "Пост")
+    let post: Post = Post(title: NSLocalizedString("Post", comment: ""))
     
     private let stackView: UIStackView = {
        let view = UIStackView()
@@ -44,7 +44,7 @@ final class FeedViewController: UIViewController {
     private let textField: UITextField = {
        let field = UITextField()
         
-        field.backgroundColor = .white
+        field.backgroundColor = .textFieldColor
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
         field.leftViewMode = .always
         field.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
@@ -55,7 +55,7 @@ final class FeedViewController: UIViewController {
     }()
     
     private lazy var checkButton: CustomButton = {
-        let button = CustomButton(title: "check word",
+        let button = CustomButton(title: NSLocalizedString("Check word", comment: ""),
                                   color: .systemBlue,
                                   target: { [weak self] in self?.didTapCheckButton() })
         
@@ -67,8 +67,8 @@ final class FeedViewController: UIViewController {
     let label: UILabel = {
        let label = UILabel()
         
-        label.backgroundColor = .white
-        label.text = "Button taped"
+        label.backgroundColor = .clear
+        label.text = NSLocalizedString("Button tapped", comment: "")
         label.textAlignment = .center
         label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -77,7 +77,7 @@ final class FeedViewController: UIViewController {
     }()
     
     private lazy var postPushButtonFirst: CustomButton = { [weak self] in
-        let button = CustomButton(title: "Push Post",
+        let button = CustomButton(title: NSLocalizedString("Push Post", comment: ""),
                                   color: .clear,
                                   target: { [weak self] in self?.didTapPushButton() })
         
@@ -87,7 +87,7 @@ final class FeedViewController: UIViewController {
     }()
     
     private lazy var postPushButtonSecond: CustomButton = {
-        let button = CustomButton(title: "Push Post",
+        let button = CustomButton(title: NSLocalizedString("Push Post", comment: ""),
                                   color: .clear,
                                   target: { [weak self] in self?.didTapPushButton() })
         
@@ -99,21 +99,21 @@ final class FeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemGreen
-        
-        navigationItem.title = "Feed"
-        
         setupViews()
     }
     
     private func setupViews() {
-        view.addSubview(stackView)
-        view.addSubview(textField)
-        view.addSubview(checkButton)
-        view.addSubview(label)
         
-        stackView.insertArrangedSubview(postPushButtonFirst, at: 0)
-        stackView.insertArrangedSubview(postPushButtonSecond, at: 1)
+        self.view.backgroundColor = .backgroundColor
+        self.navigationItem.title = NSLocalizedString("Feed", comment: "")
+        
+        self.view.addSubview(stackView)
+        self.view.addSubview(textField)
+        self.view.addSubview(checkButton)
+        self.view.addSubview(label)
+        
+        self.stackView.insertArrangedSubview(postPushButtonFirst, at: 0)
+        self.stackView.insertArrangedSubview(postPushButtonSecond, at: 1)
 
         stackView.snp.makeConstraints({ make in
             make.centerX.equalToSuperview()
