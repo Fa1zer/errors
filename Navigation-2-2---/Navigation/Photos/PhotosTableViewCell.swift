@@ -45,7 +45,7 @@ final class PhotosTableViewCell: UITableViewCell {
        let label = UILabel()
         
         label.text = NSLocalizedString("Photos", comment: "")
-        label.textColor = .black
+        label.textColor = .textColor
         label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -62,6 +62,9 @@ final class PhotosTableViewCell: UITableViewCell {
     }()
     
     private func setupViews() {
+        
+        self.backgroundColor = .backgroundColor
+        
         contentView.addSubview(photosLabel)
         contentView.addSubview(arrow)
         contentView.addSubview(stackView)

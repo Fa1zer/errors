@@ -58,7 +58,7 @@ final class InfoViewController: UIViewController, Coordinatable {
     private var tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .plain)
         
-        view.backgroundColor = .white
+        view.backgroundColor = .backgroundColor
         view.tintColor = .black
         view.translatesAutoresizingMaskIntoConstraints = false
         

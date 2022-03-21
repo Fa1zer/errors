@@ -62,7 +62,7 @@ class SaveViewController: UIViewController, Coordinatable {
     private let tableView: UITableView = {
         let view = UITableView(frame: .zero, style: .plain)
         
-        view.backgroundColor = .white
+        view.backgroundColor = .backgroundColor
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
@@ -94,7 +94,7 @@ class SaveViewController: UIViewController, Coordinatable {
     }
     
     private func setupViews() {
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = .backgroundColor
         self.navigationItem.title = NSLocalizedString("Save", comment: "")
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Use filter",
                                                                                           comment: ""),

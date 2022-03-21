@@ -43,13 +43,13 @@ class GeolocationViewController: UIViewController {
                                                                 style: .done,
                                                                 target: self,
                                                                 action: #selector(self.deleteAllPins))
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = .backgroundColor
         self.title = NSLocalizedString("Geocoder", comment: "")
         
         self.view.addSubview(mapView)
         
         self.mapView.snp.makeConstraints { make in
-            make.bottom.top.equalTo(self.view.safeAreaLayoutGuide)
+            make.bottom.top.equalTo(self.view.safeAreaLayoutGuide).inset(10)
             make.leading.trailing.equalToSuperview()
         }
         

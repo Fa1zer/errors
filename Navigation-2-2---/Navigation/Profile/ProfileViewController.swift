@@ -40,6 +40,7 @@ final class ProfileViewController: UIViewController, Coordinatable {
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         
+        tableView.backgroundColor = .backgroundColor
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         return tableView
@@ -72,23 +73,27 @@ final class ProfileViewController: UIViewController, Coordinatable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemGray6
+        view.backgroundColor = .backgroundColor
         
         setupViews()
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        
-        navigationController?.setNavigationBarHidden(true, animated: true)
-                
+                        
         if translucentView.isHidden == false {
             
             tapExit()
         }
+        
     }
     
     private func setupViews() {
+        
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        self.navigationItem.setHidesBackButton(true, animated: false)
+        self.title = NSLocalizedString("Profile", comment: "")
+        
         view.addSubview(signOutButton)
         view.addSubview(tableView)
         view.addSubview(exit)

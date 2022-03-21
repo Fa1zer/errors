@@ -44,7 +44,7 @@ final class FeedViewController: UIViewController {
     private let textField: UITextField = {
        let field = UITextField()
         
-        field.backgroundColor = .white
+        field.backgroundColor = .textFieldColor
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
         field.leftViewMode = .always
         field.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
@@ -67,7 +67,7 @@ final class FeedViewController: UIViewController {
     let label: UILabel = {
        let label = UILabel()
         
-        label.backgroundColor = .white
+        label.backgroundColor = .clear
         label.text = NSLocalizedString("Button tapped", comment: "")
         label.textAlignment = .center
         label.isHidden = true
@@ -104,7 +104,7 @@ final class FeedViewController: UIViewController {
     
     private func setupViews() {
         
-        self.view.backgroundColor = .systemGreen
+        self.view.backgroundColor = .backgroundColor
         self.navigationItem.title = NSLocalizedString("Feed", comment: "")
         
         self.view.addSubview(stackView)

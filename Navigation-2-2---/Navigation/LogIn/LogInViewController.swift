@@ -108,10 +108,10 @@ final class LogInViewController: UIViewController, Coordinatable {
        let emailOrPhone = UITextField()
         
         emailOrPhone.tintColor = #colorLiteral(red: 0.3675304651, green: 0.5806378722, blue: 0.7843242884, alpha: 1)
-        emailOrPhone.textColor = .black
+        emailOrPhone.textColor = .textColor
         emailOrPhone.font = UIFont.systemFont(ofSize: 16)
         emailOrPhone.autocapitalizationType = .none
-        emailOrPhone.backgroundColor = .systemGray6
+        emailOrPhone.backgroundColor = .textFieldColor
         emailOrPhone.placeholder = NSLocalizedString("Email or phone", comment: "")
         emailOrPhone.layer.cornerRadius = 10
         emailOrPhone.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
@@ -130,10 +130,10 @@ final class LogInViewController: UIViewController, Coordinatable {
        let password = UITextField()
         
         password.tintColor = #colorLiteral(red: 0.3675304651, green: 0.5806378722, blue: 0.7843242884, alpha: 1)
-        password.textColor = .black
+        password.textColor = .textColor
         password.font = UIFont.systemFont(ofSize: 16)
         password.autocapitalizationType = .none
-        password.backgroundColor = .systemGray6
+        password.backgroundColor = .textFieldColor
         password.isSecureTextEntry = true
         password.placeholder = NSLocalizedString("Password", comment: "")
         password.layer.cornerRadius = 10
@@ -173,12 +173,8 @@ final class LogInViewController: UIViewController, Coordinatable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .white
-                
+                        
         setupViews()
-        
-        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -202,6 +198,10 @@ final class LogInViewController: UIViewController, Coordinatable {
     }
     
     private func setupViews() {
+        
+        self.view.backgroundColor = .backgroundColor
+        self.navigationController?.setNavigationBarHidden(true, animated: true)
+        
         view.addSubview(scrollView)
         view.addSubview(vkLogo)
         view.addSubview(usersEmailOrPhone)

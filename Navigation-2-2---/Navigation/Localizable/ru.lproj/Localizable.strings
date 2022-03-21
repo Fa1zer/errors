@@ -11,7 +11,7 @@
 "Check word" = "Проверить пост";
 "Button tapped" = "Кнопка была нажата";
 "Tap me" = "Нажми меня";
-"Tatooine residents" = "Жители татуина:;";
+"Tatooine residents" = "Жители татуина:";
 "Post" = "Пост";
 "Profile" = "Профиль";
 "Email or phone" = "Email или телефон";
@@ -36,7 +36,7 @@
 "Saved posts" = "Сохранённые посты:";
 "Remove filter" = "Удалить фильтр";
 "Use filter" = "Использовать фильтр";
-"Geocoder" = "Геокодер";
+"Geocoder" = "Геолокация";
 "What to do with the tag?" = "Что сделать с меткой?";
 "Back" = "Назад";
 "Plan a route" = "Проложить маршрут";

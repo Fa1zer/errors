@@ -24,7 +24,7 @@ final class PhotosViewController: UIViewController, Coordinatable {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .white
+        view.backgroundColor = .backgroundColor
         
         navigationController?.setNavigationBarHidden(false, animated: true)
         
