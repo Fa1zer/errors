@@ -9,15 +9,15 @@
 import UIKit
 import SnapKit
 
-class ProfileHeaderView: UIView {
+final class ProfileHeaderView: UIView {
 
-    private var statusText = "Вы можете добавить статус"
+    private var statusText: String? = nil
     
     internal let avatarImageView: UIImageView = {
         let image = UIImage(named: "baby yoda")
         let imageView = UIImageView(image: image)
 
-        imageView.layer.borderColor = UIColor.white.cgColor
+        imageView.layer.borderColor = UIColor.boundsColor.cgColor
         imageView.clipsToBounds = true
         imageView.layer.borderWidth = 3
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -29,7 +29,7 @@ class ProfileHeaderView: UIView {
         let name = UILabel()
 
         name.text = "Baby Yoda"
-        name.textColor = .black
+        name.textColor = .textColor
         name.textAlignment = .center
         name.font = UIFont.systemFont(ofSize: 18, weight: UIFont.Weight.bold)
         name.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +38,7 @@ class ProfileHeaderView: UIView {
     }()
 
     private lazy var setStatusButton: CustomButton = {
-        let button = CustomButton(title: "Show status",
+        let button = CustomButton(title: NSLocalizedString("Show status", comment: ""),
                                   color: .systemBlue,
                                   target: { [weak self] in self?.buttonPressed() })
         
@@ -56,8 +56,8 @@ class ProfileHeaderView: UIView {
     private let statusLabel: UILabel = {
         let status = UILabel()
 
-        status.text = "status"
-        status.textColor = .gray
+        status.text = "Your status"
+        status.textColor = .secondaryTextColor
         status.textAlignment = .center
         status.font = UIFont.systemFont(ofSize: 14,
                                         weight: UIFont.Weight.regular)
@@ -72,10 +72,10 @@ class ProfileHeaderView: UIView {
 
         edit.font = UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.regular)
         edit.tintColor = .black
-        edit.backgroundColor = .white
+        edit.backgroundColor = .textFieldColor
         edit.layer.cornerRadius = 12
         edit.layer.borderWidth = 1
-        edit.layer.borderColor = UIColor.black.cgColor
+        edit.layer.borderColor = UIColor.boundsColor.cgColor
         edit.addTarget(self, action: #selector(statusTextChanged), for: .editingChanged)
         edit.translatesAutoresizingMaskIntoConstraints = false
         edit.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
@@ -95,6 +95,8 @@ class ProfileHeaderView: UIView {
     }
     
     func setupViews() {
+        
+        self.backgroundColor = .backgroundColor
         
         addSubview(avatarImageView)
         addSubview(fullNameLabel)
@@ -149,15 +151,24 @@ class ProfileHeaderView: UIView {
     }
 
     private func buttonPressed() {
-        print(statusLabel.text!)
-
-        statusLabel.text = statusText
-        statusLabel.sizeToFit()
+        do {
+            statusLabel.text = try status()
+        
+            print(statusLabel.text! )
+        } catch {
+            print("Поле статуса пусто")
+        }
+    }
+    
+    private func status() throws -> String {
+        guard statusText != nil else {
+            throw AppErrors.emptyStatus
+        }
+        
+        return statusText!
     }
 
     @objc func statusTextChanged(_ sender: UITextField) {
         statusText = setStatusTextField.text!
     }
-    
-    
 }

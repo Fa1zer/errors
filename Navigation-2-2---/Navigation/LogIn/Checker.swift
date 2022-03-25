@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Checker {
+final class Checker {
     private init () { }
     
     static let checker = Checker()
