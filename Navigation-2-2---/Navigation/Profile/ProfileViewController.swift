@@ -191,7 +191,7 @@ final class ProfileViewController: UIViewController, Coordinatable, SecondCoordi
             do {
                 try FirebaseAuth.Auth.auth().signOut()
                 
-                self.coordintor?.pushLogInViewController()
+                self.coordintor?.popViewControllet()
                 
                 let alertController = UIAlertController(title: NSLocalizedString("You are out of the account", comment: ""), message: nil,
                                                         preferredStyle: .alert)

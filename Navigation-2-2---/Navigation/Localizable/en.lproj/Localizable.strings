@@ -56,3 +56,6 @@
 "Add filter" = "Add filter";
 "Remove" = "Remove";
 "Remove pins" = "Remove pins";
+"Use biometrics" = "Use biometrics";
+"Your biometrics are not recognized" = "Your biometrics are not recognized";
+"Failed to access biometrics" = "Failed to access biometrics";

@@ -9,6 +9,7 @@
 import UIKit
 import FirebaseAuth
 import RealmSwift
+import LocalAuthentication
 
 final class LogInViewController: UIViewController, Coordinatable, SecondCoordinatable {
     
@@ -51,8 +52,21 @@ final class LogInViewController: UIViewController, Coordinatable, SecondCoordina
     private let logInFactory = MyLogInFactory()
     private var bruteForceComplete = false
     private let bruteForce = BruteForce()
+    private var localAuthorizationService = LocalAuthorizationService()
     private let color = UIColor(patternImage: UIImage(named: "blue_pixel")!)
-
+    
+    private var biometricImage: UIImage {
+        
+        if self.localAuthorizationService.biometryType.rawValue == 2 {
+            return UIImage(systemName: "faceid") ?? UIImage()
+        } else if self.localAuthorizationService.biometryType.rawValue == 1 {
+            return UIImage(systemName: "touchid") ?? UIImage()
+        }
+        
+        return UIImage()
+        
+    }
+    
     private lazy var logInButton: CustomButton = {
        let button = CustomButton(title: NSLocalizedString("Log In", comment: ""),
                                  color: color,
@@ -75,6 +89,54 @@ final class LogInViewController: UIViewController, Coordinatable, SecondCoordina
        })
         
         button.tintColor = .white
+        button.layer.cornerRadius = 10
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
+    private lazy var biometricButton: CustomButton = {
+        let button = CustomButton(title: "",
+                                  color: .clear) { [ weak self ] in
+            
+            self?.localAuthorizationService.authorizeIfPossible { isPossible, error  in
+                
+                var status = "error"
+                
+                if error?.code == .authenticationFailed {
+                    status = "Your biometrics are not recognized"
+                } else if error?.code == .biometryLockout {
+                    status = "Failed to access biometrics"
+                }
+                
+                if isPossible {
+                    
+                    self?.logInCompletion()
+                    
+                } else {
+                    
+                    DispatchQueue.main.async {
+                        
+                        let alertController = UIAlertController(title: NSLocalizedString(status,
+                                                                                         comment: ""),
+                                                                message: nil,
+                                                                preferredStyle: .alert)
+                        
+                        let alertAction = UIAlertAction(title: "OK", style: .cancel)
+                        
+                        alertController.addAction(alertAction)
+                        
+                        self?.present(alertController, animated: true)
+                        
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+        button.tintColor = .systemBlue
         button.layer.cornerRadius = 10
         button.translatesAutoresizingMaskIntoConstraints = false
         
@@ -203,15 +265,18 @@ final class LogInViewController: UIViewController, Coordinatable, SecondCoordina
         self.view.backgroundColor = .backgroundColor
         self.navigationController?.setNavigationBarHidden(true, animated: true)
         
-        view.addSubview(scrollView)
-        view.addSubview(vkLogo)
-        view.addSubview(usersEmailOrPhone)
-        view.addSubview(usersPassword)
-        view.addSubview(logInButton)
-        view.addSubview(bruteForceButton)
-        view.addSubview(activityIndicator)
+        self.view.addSubview(scrollView)
+        self.view.addSubview(vkLogo)
+        self.view.addSubview(usersEmailOrPhone)
+        self.view.addSubview(usersPassword)
+        self.view.addSubview(logInButton)
+        self.view.addSubview(bruteForceButton)
+        self.view.addSubview(activityIndicator)
+        self.view.addSubview(biometricButton)
         
-        scrollView.addSubview(containerView)
+        self.scrollView.addSubview(containerView)
+        
+        self.biometricButton.setBackgroundImage(self.biometricImage, for: .normal)
         
         let constraints = [
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -257,8 +322,13 @@ final class LogInViewController: UIViewController, Coordinatable, SecondCoordina
                                                     containerView.safeAreaLayoutGuide.trailingAnchor,
                                                   constant: -16),
             logInButton.heightAnchor.constraint(equalToConstant: 50),
-            logInButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -100),
+            logInButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -200),
         
+            biometricButton.topAnchor.constraint(equalTo: bruteForceButton.bottomAnchor, constant: 16),
+            biometricButton.centerXAnchor.constraint(equalTo: self.containerView.centerXAnchor),
+            biometricButton.widthAnchor.constraint(equalToConstant: 50),
+            biometricButton.heightAnchor.constraint(equalTo: bruteForceButton.heightAnchor),
+            
             bruteForceButton.topAnchor.constraint(equalTo: logInButton.bottomAnchor, constant: 16),
             bruteForceButton.leadingAnchor.constraint(equalTo: logInButton.leadingAnchor),
             bruteForceButton.trailingAnchor.constraint(equalTo: logInButton.trailingAnchor),
@@ -292,41 +362,47 @@ final class LogInViewController: UIViewController, Coordinatable, SecondCoordina
                                       notLogInCompletion: notLogInCompletion)
                 }
 
-            DispatchQueue.main.async {
-                activityIndicator.stopAnimating()
+            DispatchQueue.main.async { [ weak self ] in
+                self?.activityIndicator.stopAnimating()
 
-                usersPassword.text = password
-                usersPassword.isSecureTextEntry = false
+                self?.usersPassword.text = password
+                self?.usersPassword.isSecureTextEntry = false
             }
         }
     }
     
     private func logInCompletion() {
         
-        usersPassword.isSecureTextEntry = true
-        
-        self.coordintor?.pushProfileViewController()
-        
-        bruteForceComplete = true
-        
-        let logInModel = LogInModel()
-        
-        logInModel.email = usersEmailOrPhone.text!
-        logInModel.password = usersPassword.text!
-        
-        let config = Realm.Configuration(encryptionKey: getKey())
-        
-        do {
+        DispatchQueue.main.async { [ weak self ] in
             
-            let realm = try Realm(configuration: config)
-
-            realm.beginWrite()
-            realm.add(logInModel)
-            try realm.commitWrite()
+            guard let self = self else { return }
             
-        } catch {
+            self.usersPassword.isSecureTextEntry = true
+            
+            self.coordintor?.pushProfileViewController()
+            
+            self.bruteForceComplete = true
+            
+            let logInModel = LogInModel()
+            
+            logInModel.email = self.usersEmailOrPhone.text!
+            logInModel.password = self.usersPassword.text!
+            
+            let config = Realm.Configuration(encryptionKey: self.getKey())
+            
+            do {
+                
+                let realm = try Realm(configuration: config)
 
-            print(error)
+                realm.beginWrite()
+                realm.add(logInModel)
+                try realm.commitWrite()
+                
+            } catch {
+
+                print(error)
+                
+            }
             
         }
             
