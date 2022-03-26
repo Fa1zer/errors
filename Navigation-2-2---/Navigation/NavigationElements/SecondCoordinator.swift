@@ -55,11 +55,19 @@ final class SecondCoordinator: Coordinator, Coordinatable {
     }
     
     func pushProfileViewController() {
-        let viewController = ProfileViewController()
         
-        viewController.coordintor = self
+        DispatchQueue.main.async { [ weak self ] in
+            
+            guard let self = self else { return }
+            
+            let viewController = ProfileViewController()
+            
+            viewController.coordintor = self
+            
+            self.navigationController.pushViewController(viewController, animated: true)
+            
+        }
         
-        self.navigationController.pushViewController(viewController, animated: true)
     }
     
     func pushPhotosViewController() {
@@ -72,6 +80,10 @@ final class SecondCoordinator: Coordinator, Coordinatable {
     
     func getNavigationController() -> UINavigationController {
         return self.navigationController
+    }
+    
+    func popViewControllet() {
+        self.navigationController.popViewController(animated: true)
     }
     
 }

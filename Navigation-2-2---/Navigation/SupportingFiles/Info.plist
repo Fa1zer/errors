@@ -61,6 +61,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSFaceIDUsageDescription</key>
+	<string>To access your profile, we need access to your biometrics.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Для работы карты нам нужно получить доступ к вашей локации.</string>
 </dict>

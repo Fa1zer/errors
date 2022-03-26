@@ -56,3 +56,6 @@
 "Add filter" = "Добавить фильтер";
 "Remove" = "Удалить";
 "Remove pins" = "Удалить метки";
+"Use biometrics" = "Использовать биометрику";
+"Your biometrics are not recognized" = "Ваша биометрия не расспознана";
+"Failed to access biometrics" = "Не удалось получить доступ к биометрии ";

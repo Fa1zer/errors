@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1320"
+   LastUpgradeVersion = "1240"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "FAC67085FAF68EC3E47D382E5A59E43B"
-               BuildableName = "Pods_NavigationCoordinatorTests.framework"
+               BuildableName = "Pods-NavigationCoordinatorTests.framework"
                BlueprintName = "Pods-NavigationCoordinatorTests"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
