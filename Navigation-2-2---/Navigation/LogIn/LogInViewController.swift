@@ -7,23 +7,136 @@
 //
 
 import UIKit
+import FirebaseAuth
+import RealmSwift
+import LocalAuthentication
 
-class LogInViewController: UIViewController, Coordinatable {
+final class LogInViewController: UIViewController, Coordinatable, SecondCoordinatable {
+    
+    override init(nibName: String?, bundle: Bundle?) {
+        super.init(nibName: nibName, bundle: bundle)
+        
+        delegate = logInFactory.createInspector()
+        
+        let config = Realm.Configuration(encryptionKey: getKey())
+        
+        do {
+            
+            let realm = try Realm(configuration: config)
+
+            for model in realm.objects(LogInModel.self) {
+
+                usersEmailOrPhone.text = model.email
+                usersPassword.text = model.password
+            }
+
+            try tapButton()
+            
+        } catch {
+
+            print(error)
+            
+        }
+        
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     var callTabBar: (() -> Void)?
     weak var tabBar: TabBarController?
     var delegate: LogInViewControllerDelegate?
+    var coordintor: SecondCoordinator?
     
-    
+    private let logInFactory = MyLogInFactory()
+    private var bruteForceComplete = false
     private let bruteForce = BruteForce()
+    private var localAuthorizationService = LocalAuthorizationService()
     private let color = UIColor(patternImage: UIImage(named: "blue_pixel")!)
     
+    private var biometricImage: UIImage {
+        
+        if self.localAuthorizationService.biometryType.rawValue == 2 {
+            return UIImage(systemName: "faceid") ?? UIImage()
+        } else if self.localAuthorizationService.biometryType.rawValue == 1 {
+            return UIImage(systemName: "touchid") ?? UIImage()
+        }
+        
+        return UIImage()
+        
+    }
+    
     private lazy var logInButton: CustomButton = {
-       let button = CustomButton(title: "Log In",
+       let button = CustomButton(title: NSLocalizedString("Log In", comment: ""),
                                  color: color,
-                                 target: { [weak self] in self?.tapButton() })
+                                 target: { [weak self] in
+           do {
+               try self?.tapButton()
+           } catch {
+               
+               let alertController = UIAlertController(title: NSLocalizedString("Password or email strings is empty", comment: ""),
+                                           message: NSLocalizedString("Complete it", comment: ""),
+                                           preferredStyle: .alert)
+
+               let cancelAction = UIAlertAction(title: "ОК", style: .default)
+
+
+               alertController.addAction(cancelAction)
+
+               self?.present(alertController, animated: true, completion: nil)
+           }
+       })
         
         button.tintColor = .white
+        button.layer.cornerRadius = 10
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
+    private lazy var biometricButton: CustomButton = {
+        let button = CustomButton(title: "",
+                                  color: .clear) { [ weak self ] in
+            
+            self?.localAuthorizationService.authorizeIfPossible { isPossible, error  in
+                
+                var status = "error"
+                
+                if error?.code == .authenticationFailed {
+                    status = "Your biometrics are not recognized"
+                } else if error?.code == .biometryLockout {
+                    status = "Failed to access biometrics"
+                }
+                
+                if isPossible {
+                    
+                    self?.logInCompletion()
+                    
+                } else {
+                    
+                    DispatchQueue.main.async {
+                        
+                        let alertController = UIAlertController(title: NSLocalizedString(status,
+                                                                                         comment: ""),
+                                                                message: nil,
+                                                                preferredStyle: .alert)
+                        
+                        let alertAction = UIAlertAction(title: "OK", style: .cancel)
+                        
+                        alertController.addAction(alertAction)
+                        
+                        self?.present(alertController, animated: true)
+                        
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+        button.tintColor = .systemBlue
         button.layer.cornerRadius = 10
         button.translatesAutoresizingMaskIntoConstraints = false
         
@@ -58,11 +171,11 @@ class LogInViewController: UIViewController, Coordinatable {
        let emailOrPhone = UITextField()
         
         emailOrPhone.tintColor = #colorLiteral(red: 0.3675304651, green: 0.5806378722, blue: 0.7843242884, alpha: 1)
-        emailOrPhone.textColor = .black
+        emailOrPhone.textColor = .textColor
         emailOrPhone.font = UIFont.systemFont(ofSize: 16)
         emailOrPhone.autocapitalizationType = .none
-        emailOrPhone.backgroundColor = .systemGray6
-        emailOrPhone.placeholder = "Email or phone"
+        emailOrPhone.backgroundColor = .textFieldColor
+        emailOrPhone.placeholder = NSLocalizedString("Email or phone", comment: "")
         emailOrPhone.layer.cornerRadius = 10
         emailOrPhone.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         emailOrPhone.layer.borderColor = UIColor.lightGray.cgColor
@@ -80,12 +193,12 @@ class LogInViewController: UIViewController, Coordinatable {
        let password = UITextField()
         
         password.tintColor = #colorLiteral(red: 0.3675304651, green: 0.5806378722, blue: 0.7843242884, alpha: 1)
-        password.textColor = .black
+        password.textColor = .textColor
         password.font = UIFont.systemFont(ofSize: 16)
         password.autocapitalizationType = .none
-        password.backgroundColor = .systemGray6
+        password.backgroundColor = .textFieldColor
         password.isSecureTextEntry = true
-        password.placeholder = "Password"
+        password.placeholder = NSLocalizedString("Password", comment: "")
         password.layer.cornerRadius = 10
         password.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         password.layer.borderColor = UIColor.lightGray.cgColor
@@ -100,8 +213,9 @@ class LogInViewController: UIViewController, Coordinatable {
     }()
     
     private lazy var bruteForceButton: CustomButton = {
-        let button = CustomButton(title: "Brute Force on", color: .systemGreen) { [weak self] in
-            self?.bruteForce(passwordToUnlock: "h")
+        let button = CustomButton(title: NSLocalizedString("Brute Force on", comment: ""),
+                                  color: .systemGreen) { [weak self] in
+            self?.startBruteForce()
         }
         
         button.tintColor = .white
@@ -122,12 +236,8 @@ class LogInViewController: UIViewController, Coordinatable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .white
-                
+                        
         setupViews()
-        
-        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -151,15 +261,22 @@ class LogInViewController: UIViewController, Coordinatable {
     }
     
     private func setupViews() {
-        view.addSubview(scrollView)
-        view.addSubview(vkLogo)
-        view.addSubview(usersEmailOrPhone)
-        view.addSubview(usersPassword)
-        view.addSubview(logInButton)
-        view.addSubview(bruteForceButton)
-        view.addSubview(activityIndicator)
         
-        scrollView.addSubview(containerView)
+        self.view.backgroundColor = .backgroundColor
+        self.navigationController?.setNavigationBarHidden(true, animated: true)
+        
+        self.view.addSubview(scrollView)
+        self.view.addSubview(vkLogo)
+        self.view.addSubview(usersEmailOrPhone)
+        self.view.addSubview(usersPassword)
+        self.view.addSubview(logInButton)
+        self.view.addSubview(bruteForceButton)
+        self.view.addSubview(activityIndicator)
+        self.view.addSubview(biometricButton)
+        
+        self.scrollView.addSubview(containerView)
+        
+        self.biometricButton.setBackgroundImage(self.biometricImage, for: .normal)
         
         let constraints = [
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -205,8 +322,13 @@ class LogInViewController: UIViewController, Coordinatable {
                                                     containerView.safeAreaLayoutGuide.trailingAnchor,
                                                   constant: -16),
             logInButton.heightAnchor.constraint(equalToConstant: 50),
-            logInButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -100),
+            logInButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -200),
         
+            biometricButton.topAnchor.constraint(equalTo: bruteForceButton.bottomAnchor, constant: 16),
+            biometricButton.centerXAnchor.constraint(equalTo: self.containerView.centerXAnchor),
+            biometricButton.widthAnchor.constraint(equalToConstant: 50),
+            biometricButton.heightAnchor.constraint(equalTo: bruteForceButton.heightAnchor),
+            
             bruteForceButton.topAnchor.constraint(equalTo: logInButton.bottomAnchor, constant: 16),
             bruteForceButton.leadingAnchor.constraint(equalTo: logInButton.leadingAnchor),
             bruteForceButton.trailingAnchor.constraint(equalTo: logInButton.trailingAnchor),
@@ -221,36 +343,101 @@ class LogInViewController: UIViewController, Coordinatable {
         NSLayoutConstraint.activate(constraints)
     }
     
-    private func bruteForce(passwordToUnlock: String) {
-        let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
-        var password: String = ""
-        
-        activityIndicator.startAnimating()
+    private func startBruteForce() {
+            let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
+            var password: String = ""
 
-        DispatchQueue.global().async { [self] in
-            while delegate?.inspect(emailOrPhone: "Baby Yoda", password: password) != true {
-                password = bruteForce.generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
-                
-                print(password)
-                
-                if password == passwordToUnlock {
-                    DispatchQueue.main.async {
-                        activityIndicator.stopAnimating()
+            activityIndicator.startAnimating()
+
+            DispatchQueue.global().sync { [self] in
+                while bruteForceComplete == false {
                     
-                        usersPassword.text = password
-                        usersPassword.isSecureTextEntry = false
-                    }
+                    password = bruteForce.generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
+
+                    print(password)
+                    
+                    delegate?.inspect(emailOrPhone: usersEmailOrPhone.text!,
+                                      password: usersPassword.text!,
+                                      logInCompletion: logInCompletion,
+                                      notLogInCompletion: notLogInCompletion)
                 }
+
+            DispatchQueue.main.async { [ weak self ] in
+                self?.activityIndicator.stopAnimating()
+
+                self?.usersPassword.text = password
+                self?.usersPassword.isSecureTextEntry = false
             }
         }
     }
+    
+    private func logInCompletion() {
+        
+        DispatchQueue.main.async { [ weak self ] in
+            
+            guard let self = self else { return }
+            
+            self.usersPassword.isSecureTextEntry = true
+            
+            self.coordintor?.pushProfileViewController()
+            
+            self.bruteForceComplete = true
+            
+            let logInModel = LogInModel()
+            
+            logInModel.email = self.usersEmailOrPhone.text!
+            logInModel.password = self.usersPassword.text!
+            
+            let config = Realm.Configuration(encryptionKey: self.getKey())
+            
+            do {
+                
+                let realm = try Realm(configuration: config)
 
+                realm.beginWrite()
+                realm.add(logInModel)
+                try realm.commitWrite()
+                
+            } catch {
+
+                print(error)
+                
+            }
+            
+        }
+            
+    }
+    
+    private func notLogInCompletion() {
+        
+        let alertController = UIAlertController(title: NSLocalizedString("User is not registered",
+                                                                         comment: ""),
+                                    message: NSLocalizedString("Register a user?", comment: ""),
+                                    preferredStyle: .alert)
+
+        let cancelActionFirst = UIAlertAction(title: NSLocalizedString("Yes", comment: ""),
+                                              style: .default) { [weak self] action in
+            self?.addUsser(emailOrPhone: (self?.usersEmailOrPhone.text)!,
+                           password: (self?.usersPassword.text)!)
+        }
+        
+        let cancelActionSecond = UIAlertAction(title: NSLocalizedString("No", comment: ""),
+                                               style: .cancel)
+
+        alertController.addAction(cancelActionFirst)
+        alertController.addAction(cancelActionSecond)
+
+        present(alertController, animated: true, completion: nil)
+        
+        bruteForceComplete = false
+    }
     
     @objc private func keyboadWillShow(notification: NSNotification) {
         if let keyboardSize =
             (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             scrollView.contentInset.bottom = keyboardSize.height
-            scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0,
+            scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0,
+                                                                    left: 0,
                                                                     bottom: keyboardSize.height,
                                                                     right: 0)
         }
@@ -260,26 +447,122 @@ class LogInViewController: UIViewController, Coordinatable {
         scrollView.contentInset.bottom = .zero
         scrollView.verticalScrollIndicatorInsets = .zero
     }
-    
-    private func tapButton() {
+
+    private func tapButton() throws {
         
-        if delegate?.inspect(emailOrPhone: usersEmailOrPhone.text!,
-                             password: usersPassword.text!) == true {
-            usersPassword.isSecureTextEntry = true
+        guard let usersEmailOrPhoneText = usersEmailOrPhone.text, !usersEmailOrPhoneText.isEmpty,
+              let usersPasswordText = usersPassword.text, !usersPasswordText.isEmpty else {
+                  
+                  throw LogInErrors.fieldsIsEmpty
+              }
+        
+        DispatchQueue.global().async { [ weak self ] in
             
-            navigationController?.pushViewController(ProfileViewController(), animated: true)
-        } else {
+            guard let self = self else { return }
             
-            let alertController = UIAlertController(title: "Неправильно введен логин или пароль",
-                                        message: "Попробуйте ввести заново",
+            self.delegate?.inspect(emailOrPhone: usersEmailOrPhoneText,
+                                    password: usersPasswordText,
+                                    logInCompletion: self.logInCompletion,
+                                    notLogInCompletion: self.notLogInCompletion)
+        }
+    }
+    
+    private func addUsser(emailOrPhone: String, password: String) {
+        FirebaseAuth.Auth.auth().createUser(withEmail: emailOrPhone, password: password) { [weak self]
+            result, error in
+            
+            var status = NSLocalizedString("User is registered", comment: "")
+            var message: String? = nil
+            let logInModel = LogInModel()
+            
+            logInModel.email = emailOrPhone
+            logInModel.password = password
+            
+            if let _ = error {
+                status = NSLocalizedString("error", comment: "")
+                message = nil
+            }
+            
+            if password.count < 6 {
+                status = NSLocalizedString("The password is too short.", comment: "")
+                message = NSLocalizedString("The password must be more than 5 characters long",
+                                            comment: "")
+            }
+            
+            let alertController = UIAlertController(title: status,
+                                        message: message,
                                         preferredStyle: .alert)
-            
+
             let cancelAction = UIAlertAction(title: "ОК", style: .default)
             
             
             alertController.addAction(cancelAction)
             
-            self.present(alertController, animated: true, completion: nil)
+            
+            self?.present(alertController, animated: true, completion: nil)
+
+            let config = Realm.Configuration(encryptionKey: self?.getKey())
+            
+            do {
+                
+                let realm = try Realm(configuration: config)
+
+                                
+                realm.beginWrite()
+                realm.add(logInModel)
+                try realm.commitWrite()
+                
+            } catch {
+                
+                print(error.localizedDescription)
+                
+            }
         }
     }
+    
+}
+
+extension LogInViewController {
+    
+    private func getKey() -> Data {
+
+        let keychainIdentifier = "io.Realm.EncryptionExampleKey"
+        let keychainIdentifierData = keychainIdentifier.data(using: String.Encoding.utf8,
+                                                             allowLossyConversion: false)!
+        var query: [NSString: AnyObject] = [
+            kSecClass: kSecClassKey,
+            kSecAttrApplicationTag: keychainIdentifierData as AnyObject,
+            kSecAttrKeySizeInBits: 512 as AnyObject,
+            kSecReturnData: true as AnyObject
+        ]
+
+        var dataTypeRef: AnyObject?
+        var status = withUnsafeMutablePointer(to: &dataTypeRef) { SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0)) }
+        if status == errSecSuccess {
+
+            return dataTypeRef as! Data
+            
+        }
+        
+        var key = Data(count: 64)
+        
+        key.withUnsafeMutableBytes({ (pointer: UnsafeMutableRawBufferPointer) in
+            let result = SecRandomCopyBytes(kSecRandomDefault, 64, pointer.baseAddress!)
+            assert(result == 0, "Failed to get random bytes")
+        })
+
+        query = [
+            kSecClass: kSecClassKey,
+            kSecAttrApplicationTag: keychainIdentifierData as AnyObject,
+            kSecAttrKeySizeInBits: 512 as AnyObject,
+            kSecValueData: key as AnyObject
+        ]
+        
+        status = SecItemAdd(query as CFDictionary, nil)
+        
+        assert(status == errSecSuccess, "Failed to insert the new key in the keychain")
+        
+        return key
+    }
+
 }

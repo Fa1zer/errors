@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PhotosTableViewCell: UITableViewCell {
+final class PhotosTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -44,8 +44,8 @@ class PhotosTableViewCell: UITableViewCell {
     private let photosLabel: UILabel = {
        let label = UILabel()
         
-        label.text = "Photos"
-        label.textColor = .black
+        label.text = NSLocalizedString("Photos", comment: "")
+        label.textColor = .textColor
         label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -62,6 +62,9 @@ class PhotosTableViewCell: UITableViewCell {
     }()
     
     private func setupViews() {
+        
+        self.backgroundColor = .backgroundColor
+        
         contentView.addSubview(photosLabel)
         contentView.addSubview(arrow)
         contentView.addSubview(stackView)

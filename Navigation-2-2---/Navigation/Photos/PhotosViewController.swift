@@ -9,8 +9,9 @@
 import UIKit
 import iOSIntPackage
 
-class PhotosViewController: UIViewController, Coordinatable {
+final class PhotosViewController: UIViewController, Coordinatable, SecondCoordinatable {
     
+    var coordintor: SecondCoordinator?    
     var callTabBar: (() -> Void)?
     weak var tabBar: TabBarController?
 
@@ -24,11 +25,11 @@ class PhotosViewController: UIViewController, Coordinatable {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .white
+        view.backgroundColor = .backgroundColor
         
         navigationController?.setNavigationBarHidden(false, animated: true)
         
-        navigationItem.title = "Photo Gallery"
+        navigationItem.title = NSLocalizedString("Photo Gallery", comment: "")
         
         
         
@@ -48,24 +49,41 @@ class PhotosViewController: UIViewController, Coordinatable {
         let fifthImages = [UIImage(named: "mac pro")!, UIImage(named: "mac mini")!]
 
         imageViews.forEach({firstImages.append($0.image!)})
-        
+       
         imageProcessor.processImagesOnThread(sourceImages: firstImages, filter: .colorInvert,
-                                             qos: .background) { images in
-            for i in 0 ..< images.count {
-                DispatchQueue.main.async {
-                    self.imageViews[i].image = UIImage(cgImage: images[i]!)
+                                             qos: .background) { [weak self] images in
+            
+            self?.notFoundImage(imageFound: Bool.random()) { result in
+                switch result {
+                case .success(true):
+                    for i in 0 ..< images.count {
+                        DispatchQueue.main.async {
+                            self?.imageViews[i].image = UIImage(cgImage: images[i]!)
+                        }
+                    }
+                    
+                default:
+                    let alertController = UIAlertController(title: NSLocalizedString("Not Found",
+                                                                                     comment: ""),
+                                                message: nil,
+                                                preferredStyle: .alert)
+
+                    let cancelAction = UIAlertAction(title: "ОК", style: .default)
+
+
+                    alertController.addAction(cancelAction)
+                    
+                    DispatchQueue.main.async {
+                        self?.present(alertController, animated: true, completion: nil)
+                    }
                 }
             }
-            
         } // 616
         
         imageProcessor.processImagesOnThread(sourceImages: secondImages, filter: .noir,
                                              qos: .default) { images in
-            for i in 0 ..< images.count {
-                DispatchQueue.main.async {
-                    self.imageViews.append(UIImageView(image: UIImage(cgImage: images[i]!)))
-                }
-            }
+            
+            
         } // 62
         
         imageProcessor.processImagesOnThread(sourceImages: thirdImages, filter: .chrome,
@@ -126,6 +144,14 @@ class PhotosViewController: UIViewController, Coordinatable {
         super.viewDidDisappear(animated)
         
         imagePublisherFacade.removeSubscription(for: self)
+    }
+    
+    private func notFoundImage(imageFound: Bool, completion: @escaping ((Result<Bool, AppErrors>) -> Void)) {
+        if imageFound {
+            completion(.success(imageFound))
+        } else {
+            completion(.failure(.imageNotFound))
+        }
     }
 }
 

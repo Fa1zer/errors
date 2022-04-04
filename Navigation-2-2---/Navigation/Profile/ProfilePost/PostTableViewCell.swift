@@ -8,8 +8,9 @@
 
 import UIKit
 import iOSIntPackage
+import CoreData
 
-class PostTableViewCell: UITableViewCell {
+final class PostTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -25,22 +26,36 @@ class PostTableViewCell: UITableViewCell {
     var post: ProfilePost? {
         didSet {
             autorLabel.text = post!.autor
-            likeLabel.text = "likes: \(post!.likes)"
-            viewsLabel.text = "views: \(post!.views)"
+            likeLabel.text = "\(NSLocalizedString("likes", comment: "")) \(post!.likes)"
+            viewsLabel.text = "\(NSLocalizedString("views", comment: "")) \(post!.views)"
             descriptionPost.text = post!.description
             
             imageProcessor.processImage(sourceImage: UIImage(named: post!.image)!,
-                                        filter: .allCases.randomElement()!) { [weak self] (image: UIImage?) in
+                                        filter: .allCases.randomElement()!) { [ weak self ] (image: UIImage?) in
                 self?.imagePost.image = image
             }
         }
     }
     
+    private let persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "PostModel")
+        
+        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+            
+            if let error = error {
+
+                fatalError("Unresolved error \(error)")
+            }
+        })
+        
+        return container
+    }()
+    
     private let autorLabel: UILabel = {
        let autor = UILabel()
         
         autor.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        autor.textColor = .black
+        autor.textColor = .textColor
         autor.numberOfLines = 2
         autor.translatesAutoresizingMaskIntoConstraints = false
         
@@ -51,7 +66,7 @@ class PostTableViewCell: UITableViewCell {
        let likes = UILabel()
         
         likes.font = UIFont.systemFont(ofSize: 16)
-        likes.textColor = .black
+        likes.textColor = .textColor
         likes.translatesAutoresizingMaskIntoConstraints = false
         
         return likes
@@ -61,7 +76,7 @@ class PostTableViewCell: UITableViewCell {
        let views = UILabel()
         
         views.font = UIFont.systemFont(ofSize: 16)
-        views.textColor = .black
+        views.textColor = .textColor
         views.translatesAutoresizingMaskIntoConstraints = false
         
         return views
@@ -71,7 +86,7 @@ class PostTableViewCell: UITableViewCell {
        let description = UILabel()
         
         description.font = UIFont.systemFont(ofSize: 14)
-        description.textColor = .systemGray
+        description.textColor = .secondaryTextColor
         description.numberOfLines = 0
         description.translatesAutoresizingMaskIntoConstraints = false
         
@@ -89,6 +104,9 @@ class PostTableViewCell: UITableViewCell {
     }()
     
     private func setupViews() {
+        
+        self.backgroundColor = .backgroundColor
+        
         addSubview(autorLabel)
         addSubview(likeLabel)
         addSubview(viewsLabel)
@@ -130,5 +148,40 @@ class PostTableViewCell: UITableViewCell {
                           bottomAnchor.constraint(equalTo: likeLabel.bottomAnchor, constant: 16)]
         
         NSLayoutConstraint.activate(constraints)
+        
+        let doubleTapGestureRecognize = UITapGestureRecognizer(target: self,
+                                                               action: #selector(doubleTap))
+        
+        doubleTapGestureRecognize.numberOfTapsRequired = 2
+        
+        self.addGestureRecognizer(doubleTapGestureRecognize)
+    }
+    
+    @objc private func doubleTap() {
+        DispatchQueue.main.async { [ self ] in
+            
+            let context = persistentContainer.newBackgroundContext()
+            
+            guard let entity = NSEntityDescription.entity(forEntityName: "CoreDataPosts", in: context)
+            else { return }
+            
+            let postObject = CoreDataPosts(entity: entity, insertInto: context)
+            
+            postObject.text = post?.description
+            postObject.title = post?.autor
+            postObject.imageName = post?.image
+            postObject.numberLikes = Int16(post?.likes ?? 0)
+            postObject.numberViews = Int16(post?.views ?? 0)
+            
+            context.perform {
+                do {
+                    try context.save()
+                    
+                    NotificationCenter.default.post(name: NSNotification.Name("save"), object: nil)
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+        }
     }
 }
