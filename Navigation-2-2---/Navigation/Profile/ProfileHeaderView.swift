@@ -76,7 +76,7 @@ final class ProfileHeaderView: UIView {
         edit.layer.cornerRadius = 12
         edit.layer.borderWidth = 1
         edit.layer.borderColor = UIColor.boundsColor.cgColor
-        edit.addTarget(self, action: #selector(statusTextChanged), for: .editingChanged)
+        edit.addTarget(ProfileHeaderView.self, action: #selector(statusTextChanged), for: .editingChanged)
         edit.translatesAutoresizingMaskIntoConstraints = false
         edit.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
         edit.leftViewMode = .always

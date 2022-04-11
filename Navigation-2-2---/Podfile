@@ -12,15 +12,6 @@ pod 'Firebase/Core'
 pod 'Firebase/Auth'
 pod 'RealmSwift'
 
-target 'NavigationCoordinatorTests' do
-
-        inherit! :search_paths
-
-        pod 'Firebase'
-
-    end
-
-
 end
 
 target 'StorageService' do

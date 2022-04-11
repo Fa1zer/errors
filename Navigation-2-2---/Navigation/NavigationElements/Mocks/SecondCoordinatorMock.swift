@@ -2,7 +2,7 @@
 //  SecondCoordinatorMock.swift
 //  Navigation
 //
-//  Created by Artemiy Zuzin on 25.03.2022.
+//  Created by Artemiy Zuzin on 11.04.2022.
 //  Copyright © 2022 Artem Novichkov. All rights reserved.
 //
 
@@ -29,7 +29,7 @@ final class SecondCoordinatorMock: Coordinator {
         self.selectedViewController = ProfileViewController()
     }
     
-    func pushPhotosViewController() {
+    func pushPhotosViewController(images: [UIImageView] = []) {
         self.selectedViewController = PhotosViewController()
     }
     

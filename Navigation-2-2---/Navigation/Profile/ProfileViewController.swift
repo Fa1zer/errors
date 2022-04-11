@@ -10,9 +10,10 @@ import UIKit
 import FirebaseAuth
 
 final class ProfileViewController: UIViewController, Coordinatable, SecondCoordinatable {
+    
+    var coordintor: SecondCoordinator?
     weak var tabBar: TabBarController?
     var callTabBar: (() -> Void)?
-    var coordintor: SecondCoordinator?
     
     private let footerView = ProfileTimerFooterView()
     private let headerView = ProfileHeaderView()
@@ -315,17 +316,13 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         if indexPath.row == 0 {
-            let photosController = PhotosViewController()
-            
             var images = [UIImageView]()
     
             for i in 0 ..< posts.count {
                 images.append(UIImageView(image: UIImage(named: posts[i].image)))
             }
                 
-            photosController.imageViews = images
-            
-            self.coordintor?.pushPhotosViewController()
+            self.coordintor?.pushPhotosViewController(images: images)
         }
     }
     

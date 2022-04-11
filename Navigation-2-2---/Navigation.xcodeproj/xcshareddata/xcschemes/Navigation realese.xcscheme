@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1320"
+   LastUpgradeVersion = "1330"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -32,9 +32,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E3D38D2F27EDED240075EA83"
-               BuildableName = "NavigationTests.xctest"
-               BlueprintName = "NavigationTests"
+               BlueprintIdentifier = "E335CF732804AFD70086CF22"
+               BuildableName = "NavigationCoordinatorTests.xctest"
+               BlueprintName = "NavigationCoordinatorTests"
                ReferencedContainer = "container:Navigation.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -42,9 +42,19 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E32C812127EE4883001735FF"
-               BuildableName = "NavigationCoordinatorTests.xctest"
-               BlueprintName = "NavigationCoordinatorTests"
+               BlueprintIdentifier = "E335CF8D2804B0A90086CF22"
+               BuildableName = "NavigationCoordinatorsTests.xctest"
+               BlueprintName = "NavigationCoordinatorsTests"
+               ReferencedContainer = "container:Navigation.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E335CF9A2804B2140086CF22"
+               BuildableName = "CoordinatorNavigationTests.xctest"
+               BlueprintName = "CoordinatorNavigationTests"
                ReferencedContainer = "container:Navigation.xcodeproj">
             </BuildableReference>
          </TestableReference>

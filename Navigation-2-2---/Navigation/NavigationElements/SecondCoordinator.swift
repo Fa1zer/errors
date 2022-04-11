@@ -14,7 +14,7 @@ protocol Coordinator {
     
     func pushProfileViewController()
     
-    func pushPhotosViewController()
+    func pushPhotosViewController(images: [UIImageView])
         
 }
 
@@ -62,9 +62,10 @@ final class SecondCoordinator: Coordinator, Coordinatable {
         self.navigationController.pushViewController(viewController, animated: true)
     }
     
-    func pushPhotosViewController() {
+    func pushPhotosViewController(images: [UIImageView] = []) {
         let viewController = PhotosViewController()
         
+        viewController.imageViews = images
         viewController.coordintor = self
         
         self.navigationController.pushViewController(viewController, animated: true)

@@ -12,6 +12,8 @@ import RealmSwift
 
 final class LogInViewController: UIViewController, Coordinatable, SecondCoordinatable {
     
+    var coordintor: SecondCoordinator?
+    
     override init(nibName: String?, bundle: Bundle?) {
         super.init(nibName: nibName, bundle: bundle)
         
@@ -46,7 +48,6 @@ final class LogInViewController: UIViewController, Coordinatable, SecondCoordina
     var callTabBar: (() -> Void)?
     weak var tabBar: TabBarController?
     var delegate: LogInViewControllerDelegate?
-    var coordintor: SecondCoordinator?
     
     private let logInFactory = MyLogInFactory()
     private var bruteForceComplete = false
@@ -292,11 +293,11 @@ final class LogInViewController: UIViewController, Coordinatable, SecondCoordina
                                       notLogInCompletion: notLogInCompletion)
                 }
 
-            DispatchQueue.main.async {
-                activityIndicator.stopAnimating()
+            DispatchQueue.main.async { [ weak self ] in
+                self?.activityIndicator.stopAnimating()
 
-                usersPassword.text = password
-                usersPassword.isSecureTextEntry = false
+                self?.usersPassword.text = password
+                self?.usersPassword.isSecureTextEntry = false
             }
         }
     }
