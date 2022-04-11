@@ -10,7 +10,9 @@ import UIKit
 import FirebaseAuth
 import RealmSwift
 
-final class LogInViewController: UIViewController, Coordinatable {
+final class LogInViewController: UIViewController, Coordinatable, SecondCoordinatable {
+    
+    var coordintor: SecondCoordinator?
     
     override init(nibName: String?, bundle: Bundle?) {
         super.init(nibName: nibName, bundle: bundle)
@@ -291,11 +293,11 @@ final class LogInViewController: UIViewController, Coordinatable {
                                       notLogInCompletion: notLogInCompletion)
                 }
 
-            DispatchQueue.main.async {
-                activityIndicator.stopAnimating()
+            DispatchQueue.main.async { [ weak self ] in
+                self?.activityIndicator.stopAnimating()
 
-                usersPassword.text = password
-                usersPassword.isSecureTextEntry = false
+                self?.usersPassword.text = password
+                self?.usersPassword.isSecureTextEntry = false
             }
         }
     }
@@ -304,7 +306,7 @@ final class LogInViewController: UIViewController, Coordinatable {
         
         usersPassword.isSecureTextEntry = true
         
-        navigationController?.pushViewController(ProfileViewController(), animated: true)
+        self.coordintor?.pushProfileViewController()
         
         bruteForceComplete = true
         

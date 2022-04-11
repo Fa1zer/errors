@@ -17,7 +17,19 @@ final class TabBarController: UITabBarController {
     private let infoViewController = InfoViewController()
     private let feedModule = FeedViewModel()
     private let firstNavigationController = FirstNavigationController()
-    private let secondNavigationController = SecondNavigationController()
+    private let secondCoordinator = SecondCoordinator()
+    private var secondNavigationController: UINavigationController {
+        let navigationController = self.secondCoordinator.getNavigationController()
+        
+        navigationController.tabBarItem = UITabBarItem(title: NSLocalizedString("Profile",
+                                                                                comment: ""),
+                              image: UIImage(systemName: "person.fill"),
+                              selectedImage: UIImage(systemName: "person.fill"))
+    
+        navigationController.title = NSLocalizedString("Profile", comment: "")
+        
+        return navigationController
+    }
     private let thirdNavigationController = ThirdNavigationController()
     private let saveViewController = SaveViewController()
     private let fourthNavigationController = FourthNavigationController()
@@ -49,7 +61,7 @@ final class TabBarController: UITabBarController {
         self.infoViewController.tabBar = self
         self.feedModule.tabBar = self
         self.firstNavigationController.tabBar = self
-        self.secondNavigationController.tabBar = self
+        self.secondCoordinator.tabBar = self
         self.thirdNavigationController.tabBar = self
         self.saveViewController.tabBar = self
         self.fourthNavigationController.tabBar = self

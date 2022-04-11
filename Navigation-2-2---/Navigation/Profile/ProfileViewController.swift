@@ -9,8 +9,9 @@
 import UIKit
 import FirebaseAuth
 
-final class ProfileViewController: UIViewController, Coordinatable {
+final class ProfileViewController: UIViewController, Coordinatable, SecondCoordinatable {
     
+    var coordintor: SecondCoordinator?
     weak var tabBar: TabBarController?
     var callTabBar: (() -> Void)?
     
@@ -191,7 +192,7 @@ final class ProfileViewController: UIViewController, Coordinatable {
             do {
                 try FirebaseAuth.Auth.auth().signOut()
                 
-                navigationController?.popViewController(animated: true)
+                self.coordintor?.pushLogInViewController()
                 
                 let alertController = UIAlertController(title: NSLocalizedString("You are out of the account", comment: ""), message: nil,
                                                         preferredStyle: .alert)
@@ -315,17 +316,13 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         if indexPath.row == 0 {
-            let photosController = PhotosViewController()
-            
             var images = [UIImageView]()
     
             for i in 0 ..< posts.count {
                 images.append(UIImageView(image: UIImage(named: posts[i].image)))
             }
                 
-            photosController.imageViews = images
-            
-            navigationController?.pushViewController(photosController, animated: true)
+            self.coordintor?.pushPhotosViewController(images: images)
         }
     }
     

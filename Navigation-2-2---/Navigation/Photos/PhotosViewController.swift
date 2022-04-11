@@ -9,8 +9,9 @@
 import UIKit
 import iOSIntPackage
 
-final class PhotosViewController: UIViewController, Coordinatable {
+final class PhotosViewController: UIViewController, Coordinatable, SecondCoordinatable {
     
+    var coordintor: SecondCoordinator?
     var callTabBar: (() -> Void)?
     weak var tabBar: TabBarController?
 
