@@ -30,7 +30,7 @@ final class PostTableViewCell: UITableViewCell {
             viewsLabel.text = "\(NSLocalizedString("views", comment: "")) \(post!.views)"
             descriptionPost.text = post!.description
             
-            imageProcessor.processImage(sourceImage: UIImage(named: post!.image)!,
+            imageProcessor.processImage(sourceImage: post?.image ?? UIImage(),
                                         filter: .allCases.randomElement()!) { [ weak self ] (image: UIImage?) in
                 self?.imagePost.image = image
             }
@@ -169,7 +169,7 @@ final class PostTableViewCell: UITableViewCell {
             
             postObject.text = post?.description
             postObject.title = post?.autor
-            postObject.imageName = post?.image
+            postObject.imageName = post?.imageName
             postObject.numberLikes = Int16(post?.likes ?? 0)
             postObject.numberViews = Int16(post?.views ?? 0)
             

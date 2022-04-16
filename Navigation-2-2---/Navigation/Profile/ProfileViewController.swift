@@ -10,6 +10,7 @@ import UIKit
 import FirebaseAuth
 
 final class ProfileViewController: UIViewController, Coordinatable, SecondCoordinatable {
+    
     weak var tabBar: TabBarController?
     var callTabBar: (() -> Void)?
     var coordintor: SecondCoordinator?
@@ -18,7 +19,7 @@ final class ProfileViewController: UIViewController, Coordinatable, SecondCoordi
     private let headerView = ProfileHeaderView()
     private let logInViewControler = LogInViewController()
     private let cellid = "post"
-
+    
     private var date: DateComponents? {
         didSet {
             if date!.second == -1 {
@@ -40,6 +41,7 @@ final class ProfileViewController: UIViewController, Coordinatable, SecondCoordi
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         
+        tableView.dragInteractionEnabled = true
         tableView.backgroundColor = .backgroundColor
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -73,7 +75,11 @@ final class ProfileViewController: UIViewController, Coordinatable, SecondCoordi
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .backgroundColor
+        self.tableView.dropDelegate = self
+        self.tableView.dragDelegate = self
+        self.tableView.dataSource = self
+        self.tableView.delegate = self
+        self.tableView.register(PostTableViewCell.self, forCellReuseIdentifier: cellid)
         
         setupViews()
     }
@@ -90,6 +96,7 @@ final class ProfileViewController: UIViewController, Coordinatable, SecondCoordi
     
     private func setupViews() {
         
+        self.view.backgroundColor = .backgroundColor
         self.navigationController?.setNavigationBarHidden(false, animated: true)
         self.navigationItem.setHidesBackButton(true, animated: false)
         self.title = NSLocalizedString("Profile", comment: "")
@@ -103,10 +110,6 @@ final class ProfileViewController: UIViewController, Coordinatable, SecondCoordi
         headerView.addSubview(translucentView)
         
         headerView.insertSubview(translucentView, at: 4)
-                        
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: cellid)
         
         let constraints = [signOutButton.topAnchor.constraint(equalTo:
                                                                 view.safeAreaLayoutGuide.topAnchor),
@@ -295,7 +298,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             
             for i in 0 ..< posts.count {
                 
-                image.append(UIImageView(image: UIImage(named: posts[i].image)))
+                image.append(UIImageView(image: posts[i].image))
             }
             
             cell.images = image
@@ -320,7 +323,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             var images = [UIImageView]()
     
             for i in 0 ..< posts.count {
-                images.append(UIImageView(image: UIImage(named: posts[i].image)))
+                images.append(UIImageView(image: posts[i].image))
             }
                 
             photosController.imageViews = images
@@ -335,4 +338,87 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat { 70 }
+}
+
+extension ProfileViewController: UITableViewDragDelegate {
+        
+    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        if indexPath.row == 0 { return [] }
+        
+        let firstDragItem = UIDragItem(itemProvider: NSItemProvider(object: posts[indexPath.row - 1].image))
+        firstDragItem.localObject = posts[indexPath.row - 1].image
+        
+        let secondDragItem = UIDragItem(itemProvider: NSItemProvider(object: posts[indexPath.row - 1].description as NSString))
+        secondDragItem.localObject = posts[indexPath.row - 1].description as NSString
+        
+        return [firstDragItem, secondDragItem]
+    }
+    
+}
+
+extension ProfileViewController: UITableViewDropDelegate {
+    
+    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
+        var destinationIndexPath = IndexPath()
+        
+        if let indexPath = coordinator.destinationIndexPath {
+            destinationIndexPath = indexPath
+        } else {
+            let section = tableView.numberOfSections - 1
+            let row = tableView.numberOfRows(inSection: section)
+            
+            destinationIndexPath = IndexPath(row: row, section: section)
+        }
+        
+        coordinator.session.loadObjects(ofClass: UIImage.self) { items in
+            guard let images = items as? [UIImage] else { return }
+            
+            var indexPaths = [IndexPath]()
+            
+            for (index, item) in images.enumerated() {
+                let indexPath = IndexPath(
+                    row: destinationIndexPath.row + index,
+                    section: destinationIndexPath.section
+                )
+                
+                let post = ProfilePost(
+                    autor: "anonym",
+                    description: "",
+                    image: item,
+                    likes: 0,
+                    views: 0,
+                    imageName: item.description
+                )
+                
+                if indexPath.row == 0 { return }
+                
+                posts.insert(post, at: indexPath.row - 1)
+                
+                indexPaths.append(indexPath)
+            }
+            
+            tableView.insertRows(at: indexPaths, with: .automatic)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, canHandle session: UIDropSession) -> Bool {
+        return session.canLoadObjects(ofClass: UIImage.self)
+    }
+    
+    func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
+        var dropProposal = UITableViewDropProposal(operation: .cancel)
+        
+        guard session.items.count == 1 else { return dropProposal }
+                
+        if tableView.hasActiveDrag {
+            if tableView.isEditing {
+                dropProposal = UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+            }
+        } else {
+            dropProposal = UITableViewDropProposal(operation: .copy, intent: .insertAtDestinationIndexPath)
+        }
+        
+        return dropProposal
+    }
+    
 }
