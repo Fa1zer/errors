@@ -197,9 +197,10 @@ extension SaveViewController: UITableViewDelegate, UITableViewDataSource {
 
         cell.post = ProfilePost(autor: posts[indexPath.row].title ?? "",
                                 description: posts[indexPath.row].text ?? "",
-                                image: posts[indexPath.row].imageName ?? "",
+                                image: UIImage(named: posts[indexPath.row].imageName ?? "") ?? UIImage(),
                                 likes: Int(posts[indexPath.row].numberLikes),
-                                views: Int(posts[indexPath.row].numberViews))
+                                views: Int(posts[indexPath.row].numberViews),
+                                imageName: posts[indexPath.row].imageName ?? "")
         
         return cell
     }
